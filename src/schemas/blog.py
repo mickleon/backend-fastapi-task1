@@ -1,6 +1,8 @@
 from pydantic import BaseModel, EmailStr, Field, SecretStr, AnyUrl
 from datetime import datetime
 
+SLUG_PATTERN: str = r'^[a-z0-9]+(?:-[a-z0-9]+)*$'
+
 
 class User(BaseModel):
     username: str = Field(description='Имя пользователя')
@@ -28,7 +30,7 @@ class Category(BlogicumBaseModel):
     title: str = Field(max_length=256, description='Заголовок')
     description: str = Field(description='Описание')
     slug: str = Field(
-        pattern=r'^[a-z0-9]+(?:-[a-z0-9]+)*$',
+        pattern=SLUG_PATTERN,
         max_length=64,
         description='Идентификатор категории в формате slug',
     )
