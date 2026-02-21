@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter
+
+from src.schemas.blog import User, Category
 
 router = APIRouter()
 
 
-@router.get('/hello_world')
-async def get_hello_world():
-    return Response(content='Hello World!', status_code=status.HTTP_200_OK)
+@router.post('/category/add')
+async def category_add(category: Category) -> dict:
+    return {'category': category.slug, 'created_at': category.created_at}
