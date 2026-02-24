@@ -2,20 +2,24 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Path
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
-from src.schemas.blog import Category, SLUG_PATTERN
+from src.schemas.blog import CategoryRequestSchema, SLUG_PATTERN
 
 router = APIRouter()
 
-categories: list[Category] = [
-    Category(title='Путешествия', description='Все о путешествиях', slug='travel'),
-    Category(title='Рок-музыка', description='Все о рок-музыке', slug='rock-music'),
+categories: list[CategoryRequestSchema] = [
+    CategoryRequestSchema(
+        title='Путешествия', description='Все о путешествиях', slug='travel'
+    ),
+    CategoryRequestSchema(
+        title='Рок-музыка', description='Все о рок-музыке', slug='rock-music'
+    ),
 ]
 
 
 @router.get('/category/{category_slug}')
 async def get_category(
     category_slug: Annotated[str, Path(pattern=SLUG_PATTERN)],
-) -> Category:
+) -> CategoryRequestSchema:
     for category in categories:
         if category.slug == category_slug:
             return category
@@ -23,7 +27,7 @@ async def get_category(
 
 
 @router.post('/category')
-async def add_category(category_to_add: Category) -> dict:
+async def add_category(category_to_add: CategoryRequestSchema) -> dict:
     slug_to_add = category_to_add.slug
     for category in categories:
         if category.slug == slug_to_add:
@@ -38,7 +42,7 @@ async def add_category(category_to_add: Category) -> dict:
 @router.put('/category/{category_slug}')
 async def update_category(
     category_slug: Annotated[str, Path(pattern=SLUG_PATTERN)],
-    category_new: Category,
+    category_new: CategoryRequestSchema,
 ) -> dict:
     for index, category in enumerate(categories):
         if category.slug == category_slug:
