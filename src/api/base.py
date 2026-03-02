@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Path
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
-from src.schemas.blog import CategoryRequestSchema, SLUG_PATTERN
+from src.schemas.category import CategoryRequestSchema, SLUG_PATTERN
 
 router = APIRouter()
 
