@@ -16,4 +16,5 @@ class CreateUserUseCase:
                 password=data.password.get_secret_value(),
             )
             self._repo.create(session=session, user=user)
-            return UserResponseSchema.model_validate(obj=user)
+
+        return UserResponseSchema.model_validate(obj=user)

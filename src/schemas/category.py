@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
 
@@ -15,3 +15,5 @@ class CategoryResponseSchema(BaseModel):
 
     is_published: bool = Field(default=True, description='Опубликовано')
     created_at: datetime = Field(description='Дата и время создания')
+
+    model_config = ConfigDict(from_attributes=True)

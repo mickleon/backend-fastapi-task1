@@ -1,3 +1,4 @@
+import uuid
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.models.category import Category
 from src.infrastructure.sqlite.repositories.category import CategoryRepository
@@ -13,4 +14,5 @@ class CreateCategoryUseCase:
         with self._database.session() as session:
             category = Category(**data.model_dump())
             self._repo.create(session=session, category=category)
-            return CategoryResponseSchema.model_validate(obj=category)
+
+        return CategoryResponseSchema.model_validate(obj=category)
