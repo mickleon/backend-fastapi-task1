@@ -1,67 +1,41 @@
-from typing import Annotated
-from fastapi import APIRouter, HTTPException, Path
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
+from fastapi import APIRouter
 
-from src.schemas.category import CategoryRequestSchema, SLUG_PATTERN
+from src.domain.user.use_cases.create_user import CreateUserUseCase
+from src.domain.user.use_cases.delete_user_by_username import (
+    DeleteUserByUsernameUseCase,
+)
+from src.domain.user.use_cases.get_user_by_username import GetUserByUsernameUseCase
+from src.domain.user.use_cases.update_user_by_username import (
+    UpdateUserByUsernameUseCase,
+)
+from src.schemas.user import UserResponseSchema, UserRequestSchema
 
 router = APIRouter()
 
-categories: list[CategoryRequestSchema] = [
-    CategoryRequestSchema(
-        title='Путешествия', description='Все о путешествиях', slug='travel'
-    ),
-    CategoryRequestSchema(
-        title='Рок-музыка', description='Все о рок-музыке', slug='rock-music'
-    ),
-]
+
+@router.get('/user/{login}')
+async def get_user_by_username(username: str) -> UserResponseSchema:
+    use_case = GetUserByUsernameUseCase()
+    return await use_case.execute(username=username)
 
 
-@router.get('/category/{category_slug}')
-async def get_category(
-    category_slug: Annotated[str, Path(pattern=SLUG_PATTERN)],
-) -> CategoryRequestSchema:
-    for category in categories:
-        if category.slug == category_slug:
-            return category
-    raise HTTPException(status_code=404, detail=f'Category "{category_slug}" not found')
+@router.post('/user')
+async def create_user(data: UserRequestSchema) -> UserResponseSchema:
+    use_case = CreateUserUseCase()
+    return await use_case.execute(data=data)
 
 
-@router.post('/category')
-async def add_category(category_to_add: CategoryRequestSchema) -> dict:
-    slug_to_add = category_to_add.slug
-    for category in categories:
-        if category.slug == slug_to_add:
-            raise HTTPException(
-                status_code=HTTP_409_CONFLICT,
-                detail=f'Category "{slug_to_add}" already exists',
-            )
-    categories.append(category_to_add)
-    return {'message': f'Category "{slug_to_add}" created successfully!'}
+@router.put('/user/{login}')
+async def update_user_by_username(
+    username: str, data: UserRequestSchema
+) -> UserResponseSchema:
+    use_case = UpdateUserByUsernameUseCase()
+    return await use_case.execute(username=username, data=data)
 
 
-@router.put('/category/{category_slug}')
-async def update_category(
-    category_slug: Annotated[str, Path(pattern=SLUG_PATTERN)],
-    category_new: CategoryRequestSchema,
-) -> dict:
-    for index, category in enumerate(categories):
-        if category.slug == category_slug:
-            categories[index] = category_new
-            return {'message': f'Category "{category_slug}" updated successfully!'}
-    raise HTTPException(
-        status_code=HTTP_404_NOT_FOUND,
-        detail=f'Category "{category_slug}" not found',
-    )
+@router.delete('/user/{login}')
+async def delete_user_by_username(login: str) -> dict:
+    use_case = DeleteUserByUsernameUseCase()
+    await use_case.execute(login)
 
-
-@router.delete('/category/{category_slug}')
-async def delete_category(
-    category_slug: Annotated[str, Path(pattern=SLUG_PATTERN)],
-) -> dict:
-    for category in categories:
-        if category.slug == category_slug:
-            categories.remove(category)
-            return {'message': f'Category "{category.slug}" deleted successfully!'}
-    raise HTTPException(
-        status_code=HTTP_404_NOT_FOUND, detail=f'Category "{category_slug}" not found'
-    )
+    return {'message': f'Пользователь "{login}" успешно удален'}

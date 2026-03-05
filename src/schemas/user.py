@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
 from datetime import datetime
 
 
@@ -21,3 +21,5 @@ class UserResponseSchema(BaseModel):
     created_at: datetime = Field(description='Дата регистрации')
     is_active: bool = Field(description='Является активным')
     is_admin: bool = Field(description='Является администратором')
+
+    model_config = ConfigDict(from_attributes=True)
