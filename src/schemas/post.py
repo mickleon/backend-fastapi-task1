@@ -1,3 +1,4 @@
+import uuid
 from pydantic import BaseModel, Field, AnyUrl, ConfigDict
 from datetime import datetime
 
@@ -7,8 +8,8 @@ class PostRequestSchema(BaseModel):
     text: str = Field(description='Текст')
     pub_date: datetime = Field(description='Дата и время публикации')
 
-    location_id: int | None = Field(default=None, description='ID местоположения')
-    category_id: int | None = Field(default=None, description='ID категории')
+    location_id: uuid.UUID | None = Field(default=None, description='ID местоположения')
+    category_id: uuid.UUID | None = Field(default=None, description='ID категории')
     image_url: AnyUrl | None = Field(
         default=None, description='URL прикрепленного изображения'
     )
@@ -22,8 +23,8 @@ class PostResponseSchema(BaseModel):
     pub_date: datetime = Field(description='Дата и время публикации')
 
     author_id: int = Field(description='ID автора')
-    location_id: int | None = Field(default=None, description='ID местоположения')
-    category_id: int | None = Field(default=None, description='ID категории')
+    location_id: uuid.UUID | None = Field(default=None, description='ID местоположения')
+    category_id: uuid.UUID | None = Field(default=None, description='ID категории')
     image_url: AnyUrl | None = Field(
         default=None, description='URL прикрепленного изображения'
     )
