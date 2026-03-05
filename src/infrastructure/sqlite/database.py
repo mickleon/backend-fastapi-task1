@@ -33,3 +33,4 @@ class Database:
 
 database = Database()
 Base = declarative_base()
+

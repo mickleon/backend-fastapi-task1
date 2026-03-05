@@ -31,3 +31,4 @@ class CategoryRepository:
     def delete(self, session: Session, category: Category):
         session.delete(category)
         session.commit()
+

@@ -21,3 +21,4 @@ class GetCategoryUseCase:
                 )
 
         return CategoryResponseSchema.model_validate(obj=category)
+

@@ -18,3 +18,4 @@ class CreateUserUseCase:
             self._repo.create(session=session, user=user)
 
         return UserResponseSchema.model_validate(obj=user)
+

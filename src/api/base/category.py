@@ -41,3 +41,4 @@ async def delete_category(id: uuid.UUID):
     use_case = DeleteCategoryUseCase()
     await use_case.execute(id)
     return {'message': f'Категория с id "{id}" успешно удаленa'}
+

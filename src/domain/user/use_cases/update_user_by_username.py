@@ -24,3 +24,4 @@ class UpdateUserByUsernameUseCase:
             self._repo.update(session=session, user=user, data=data)
 
         return UserResponseSchema.model_validate(obj=user)
+

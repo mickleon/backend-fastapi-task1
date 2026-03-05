@@ -38,3 +38,4 @@ async def delete_user_by_username(username: str):
     use_case = DeleteUserByUsernameUseCase()
     await use_case.execute(username)
     return {'message': f'Пользователь "{username}" успешно удален'}
+

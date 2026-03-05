@@ -20,3 +20,4 @@ class DeleteCategoryUseCase:
                 )
 
         self._repo.delete(session=session, category=category)
+

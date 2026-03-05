@@ -17,3 +17,4 @@ def create_app() -> FastAPI:
     app.include_router(base_router, prefix='/base', tags=['Base APIs'])
 
     return app
+

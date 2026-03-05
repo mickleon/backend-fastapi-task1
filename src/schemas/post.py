@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, AnyUrl
+from pydantic import BaseModel, Field, AnyUrl, ConfigDict
 from datetime import datetime
 
 
@@ -30,3 +30,6 @@ class PostResponseSchema(BaseModel):
 
     is_published: bool = Field(default=True, description='Опубликовано')
     created_at: datetime = Field(description='Дата и время создания')
+
+    model_config = ConfigDict(from_attributes=True)
+

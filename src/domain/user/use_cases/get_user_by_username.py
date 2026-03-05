@@ -20,3 +20,4 @@ class GetUserByUsernameUseCase:
                 )
 
         return UserResponseSchema.model_validate(obj=user)
+

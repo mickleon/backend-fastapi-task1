@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
@@ -12,3 +12,6 @@ class CommentResponseSchema(BaseModel):
     post_id: int = Field(description='ID публикации')
     author_id: int = Field(description='ID автора')
     created_at: datetime = Field(description='Дата и время создания')
+
+    model_config = ConfigDict(from_attributes=True)
+

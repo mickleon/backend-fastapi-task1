@@ -19,3 +19,4 @@ class DeleteUserByUsernameUseCase:
                 )
 
         self._repo.delete(session=session, user=user)
+

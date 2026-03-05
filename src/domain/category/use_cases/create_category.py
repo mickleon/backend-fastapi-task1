@@ -1,4 +1,3 @@
-import uuid
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.models.category import Category
 from src.infrastructure.sqlite.repositories.category import CategoryRepository
@@ -16,3 +15,4 @@ class CreateCategoryUseCase:
             self._repo.create(session=session, category=category)
 
         return CategoryResponseSchema.model_validate(obj=category)
+
