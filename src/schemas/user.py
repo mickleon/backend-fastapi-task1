@@ -10,6 +10,8 @@ class UserRequestSchema(BaseModel):
     first_name: str | None = Field(default=None, description='Имя')
     last_name: str | None = Field(default=None, description='Фамилия')
 
+    is_active: bool = Field(description='Является активным')
+
 
 class UserResponseSchema(BaseModel):
     username: str = Field(description='Имя пользователя')

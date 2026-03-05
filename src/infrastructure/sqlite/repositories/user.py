@@ -35,5 +35,3 @@ class UserRepository:
     def delete(self, session: Session, user: User):
         session.delete(user)
         session.commit()
-
-        return user

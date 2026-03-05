@@ -10,22 +10,22 @@ from src.domain.user.use_cases.update_user_by_username import (
 )
 from src.schemas.user import UserResponseSchema, UserRequestSchema
 
-router = APIRouter()
+user_router = APIRouter()
 
 
-@router.get('/user/{login}')
+@user_router.get('/{username}')
 async def get_user_by_username(username: str) -> UserResponseSchema:
     use_case = GetUserByUsernameUseCase()
     return await use_case.execute(username=username)
 
 
-@router.post('/user')
+@user_router.post('/')
 async def create_user(data: UserRequestSchema) -> UserResponseSchema:
     use_case = CreateUserUseCase()
     return await use_case.execute(data=data)
 
 
-@router.put('/user/{login}')
+@user_router.put('/{username}')
 async def update_user_by_username(
     username: str, data: UserRequestSchema
 ) -> UserResponseSchema:
@@ -33,9 +33,8 @@ async def update_user_by_username(
     return await use_case.execute(username=username, data=data)
 
 
-@router.delete('/user/{login}')
-async def delete_user_by_username(login: str) -> dict:
+@user_router.delete('/{username}')
+async def delete_user_by_username(username: str):
     use_case = DeleteUserByUsernameUseCase()
-    await use_case.execute(login)
-
-    return {'message': f'Пользователь "{login}" успешно удален'}
+    await use_case.execute(username)
+    return {'message': f'Пользователь "{username}" успешно удален'}

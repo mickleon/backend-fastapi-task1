@@ -7,7 +7,10 @@ from src.infrastructure.sqlite.database import Base
 class User(Base):
     __tablename__ = 'users'
 
-    username: Mapped[str] = mapped_column(primary_key=True, nullable=False, unique=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True, autoincrement=True, nullable=False
+    )
+    username: Mapped[str] = mapped_column(nullable=False, unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
 
