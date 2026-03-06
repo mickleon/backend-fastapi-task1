@@ -8,7 +8,9 @@ from src.infrastructure.sqlite.database import Base
 class Comment(Base):
     __tablename__ = 'comments'
 
-    id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    id: Mapped[int] = mapped_column(
+        primary_key=True, nullable=False, autoincrement=True
+    )
     text: Mapped[str] = mapped_column(nullable=False)
     author_id: Mapped[int] = mapped_column(nullable=False)
     post_id: Mapped[uuid.UUID] = mapped_column(nullable=False)
