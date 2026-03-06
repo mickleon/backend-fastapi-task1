@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from src.domain.location.use_cases.create_location import CreateLocationUseCase
 from src.domain.location.use_cases.delete_location import (
@@ -22,7 +22,7 @@ async def get_location(id: uuid.UUID) -> LocationResponseSchema:
     return await use_case.execute(id=id)
 
 
-@location_router.post('/')
+@location_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_location(data: LocationRequestSchema) -> LocationResponseSchema:
     use_case = CreateLocationUseCase()
     return await use_case.execute(data=data)
@@ -36,7 +36,7 @@ async def update_location(
     return await use_case.execute(id=id, data=data)
 
 
-@location_router.delete('/{id}')
+@location_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_location(id: uuid.UUID):
     use_case = DeleteLocationUseCase()
     await use_case.execute(id)

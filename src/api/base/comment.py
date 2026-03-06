@@ -1,5 +1,6 @@
 import uuid
 from fastapi import APIRouter
+from starlette import status
 
 from src.domain.comment.use_cases.create_comment import CreateCommentUseCase
 from src.domain.comment.use_cases.delete_comment import (
@@ -22,7 +23,7 @@ async def get_comment(id: uuid.UUID) -> CommentResponseSchema:
     return await use_case.execute(id=id)
 
 
-@comment_router.post('/')
+@comment_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_comment(data: CommentRequestSchema) -> CommentResponseSchema:
     use_case = CreateCommentUseCase()
     return await use_case.execute(data=data)
@@ -36,7 +37,7 @@ async def update_comment(
     return await use_case.execute(id=id, data=data)
 
 
-@comment_router.delete('/{id}')
+@comment_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment(id: uuid.UUID):
     use_case = DeleteCommentUseCase()
     await use_case.execute(id)

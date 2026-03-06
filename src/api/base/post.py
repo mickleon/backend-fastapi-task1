@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from src.domain.post.use_cases.create_post import CreatePostUseCase
 from src.domain.post.use_cases.delete_post import (
@@ -22,7 +22,7 @@ async def get_post(id: uuid.UUID) -> PostResponseSchema:
     return await use_case.execute(id=id)
 
 
-@post_router.post('/')
+@post_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_post(data: PostRequestSchema) -> PostResponseSchema:
     use_case = CreatePostUseCase()
     return await use_case.execute(data=data)
@@ -34,7 +34,7 @@ async def update_post(id: uuid.UUID, data: PostRequestSchema) -> PostResponseSch
     return await use_case.execute(id=id, data=data)
 
 
-@post_router.delete('/{id}')
+@post_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id: uuid.UUID):
     use_case = DeletePostUseCase()
     await use_case.execute(id)

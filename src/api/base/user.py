@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-
+from starlette import status
 from src.domain.user.use_cases.create_user import CreateUserUseCase
 from src.domain.user.use_cases.delete_user_by_username import (
     DeleteUserByUsernameUseCase,
@@ -19,7 +19,7 @@ async def get_user_by_username(username: str) -> UserResponseSchema:
     return await use_case.execute(username=username)
 
 
-@user_router.post('/')
+@user_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_user(data: UserRequestSchema) -> UserResponseSchema:
     use_case = CreateUserUseCase()
     return await use_case.execute(data=data)
@@ -33,7 +33,7 @@ async def update_user_by_username(
     return await use_case.execute(username=username, data=data)
 
 
-@user_router.delete('/{username}')
+@user_router.delete('/{username}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_by_username(username: str):
     use_case = DeleteUserByUsernameUseCase()
     await use_case.execute(username)
