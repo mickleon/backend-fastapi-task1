@@ -1,7 +1,12 @@
 from typing import Type
 from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
+from src.core.exceptions.api_exceptions import (
+    UserAlreadyExistsException,
+    UserNotFoundException,
+)
 from src.infrastructure.sqlite.models.user import User
 from src.schemas.user import UserRequestSchema
 
@@ -13,6 +18,10 @@ class UserRepository:
     def get(self, session: Session, username: str) -> User:
         query = select(self._model).where(self._model.username == username)
         user = session.scalar(query)
+
+        if not user:
+            raise UserNotFoundException()
+
         return user
 
     def create(self, session: Session, data: UserRequestSchema) -> User:
@@ -39,7 +48,10 @@ class UserRepository:
             .values(**user_data)
             .returning(self._model)
         )
-        user = session.scalar(query)
+        try:
+            user = session.scalar(query)
+        except IntegrityError:
+            raise UserAlreadyExistsException()
 
         return user
 
