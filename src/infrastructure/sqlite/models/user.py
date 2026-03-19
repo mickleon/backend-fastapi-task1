@@ -14,10 +14,12 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
 
-    first_name: Mapped[str] = mapped_column()
-    last_name: Mapped[str] = mapped_column()
+    first_name: Mapped[str] = mapped_column(nullable=True)
+    last_name: Mapped[str] = mapped_column(nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, default=datetime.now
+    )
 
     is_active: Mapped[bool] = mapped_column(nullable=False, default=True)
     is_admin: Mapped[bool] = mapped_column(nullable=False, default=False)

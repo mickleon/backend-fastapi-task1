@@ -12,8 +12,10 @@ class Category(Base):
         primary_key=True, nullable=False, default=uuid.uuid4
     )
     title: Mapped[str] = mapped_column(nullable=False)
-    description: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column(nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
     is_published: Mapped[bool] = mapped_column(nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, default=datetime.now
+    )
 

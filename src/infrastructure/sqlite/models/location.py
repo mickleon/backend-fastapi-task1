@@ -13,6 +13,8 @@ class Location(Base):
     )
     name: Mapped[str] = mapped_column(nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
     is_published: Mapped[bool] = mapped_column(nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, default=datetime.now
+    )
 
