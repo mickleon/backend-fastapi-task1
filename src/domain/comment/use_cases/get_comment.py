@@ -12,4 +12,3 @@ class GetCommentUseCase:
         with self._database.session() as session:
             comment = self._repo.get(session=session, id=id)
             return CommentResponseSchema.model_validate(obj=comment)
-

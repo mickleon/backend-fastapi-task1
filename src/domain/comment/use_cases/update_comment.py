@@ -15,4 +15,3 @@ class UpdateCommentUseCase:
             comment = self._repo.update(session=session, id=id, data=data)
 
             return CommentResponseSchema.model_validate(obj=comment)
-

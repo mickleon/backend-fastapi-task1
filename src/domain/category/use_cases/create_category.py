@@ -13,4 +13,3 @@ class CreateCategoryUseCase:
             category = self._repo.create(session=session, data=data)
 
             return CategoryResponseSchema.model_validate(obj=category)
-

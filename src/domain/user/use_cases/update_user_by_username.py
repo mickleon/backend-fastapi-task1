@@ -17,4 +17,3 @@ class UpdateUserByUsernameUseCase:
             )
 
             return UserResponseSchema.model_validate(obj=user)
-

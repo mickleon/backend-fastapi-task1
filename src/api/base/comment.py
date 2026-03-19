@@ -41,4 +41,3 @@ async def delete_comment(id: int):
     use_case = DeleteCommentUseCase()
     await use_case.execute(id)
     return {'message': f'Комментарий с id "{id}" успешно удален'}
-

@@ -25,4 +25,3 @@ class UserResponseSchema(BaseModel):
     is_admin: bool = Field(description='Является администратором')
 
     model_config = ConfigDict(from_attributes=True)
-

@@ -17,4 +17,3 @@ class UpdateLocationUseCase:
             location = self._repo.update(session=session, id=id, data=data)
 
             return LocationResponseSchema.model_validate(obj=location)
-

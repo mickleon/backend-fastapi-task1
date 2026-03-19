@@ -41,4 +41,3 @@ class CommentRepository:
     def delete(self, session: Session, id: int):
         query = delete(self._model).where(self._model.id == id)
         session.execute(query)
-

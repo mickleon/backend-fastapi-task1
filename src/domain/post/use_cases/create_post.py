@@ -13,4 +13,3 @@ class CreatePostUseCase:
             post = self._repo.create(session=session, data=data)
 
             return PostResponseSchema.model_validate(obj=post)
-

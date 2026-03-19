@@ -23,7 +23,9 @@ async def get_location(id: uuid.UUID) -> LocationResponseSchema:
 
 
 @location_router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_location(data: LocationRequestSchema) -> LocationResponseSchema:
+async def create_location(
+    data: LocationRequestSchema,
+) -> LocationResponseSchema:
     use_case = CreateLocationUseCase()
     return await use_case.execute(data=data)
 
@@ -41,4 +43,3 @@ async def delete_location(id: uuid.UUID):
     use_case = DeleteLocationUseCase()
     await use_case.execute(id)
     return {'message': f'Местоположение с id "{id}" успешно удалено'}
-

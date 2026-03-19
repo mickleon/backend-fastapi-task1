@@ -23,4 +23,3 @@ class User(Base):
 
     is_active: Mapped[bool] = mapped_column(nullable=False, default=True)
     is_admin: Mapped[bool] = mapped_column(nullable=False, default=False)
-

@@ -19,10 +19,15 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(user_router, prefix='/user', tags=['User CRUD'])
-    app.include_router(category_router, prefix='/category', tags=['Category CRUD'])
-    app.include_router(location_router, prefix='/location', tags=['Location CRUD'])
+    app.include_router(
+        category_router, prefix='/category', tags=['Category CRUD']
+    )
+    app.include_router(
+        location_router, prefix='/location', tags=['Location CRUD']
+    )
     app.include_router(post_router, prefix='/post', tags=['Post CRUD'])
-    app.include_router(comment_router, prefix='/comment', tags=['Comment CRUD'])
+    app.include_router(
+        comment_router, prefix='/comment', tags=['Comment CRUD']
+    )
 
     return app
-

@@ -10,4 +10,3 @@ class DeleteCommentUseCase:
     async def execute(self, id: int):
         with self._database.session() as session:
             self._repo.delete(session=session, id=id)
-

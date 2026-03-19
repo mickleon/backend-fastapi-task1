@@ -13,4 +13,3 @@ class GetUserByUsernameUseCase:
             user = self._repo.get(session=session, username=username)
 
             return UserResponseSchema.model_validate(obj=user)
-

@@ -10,4 +10,3 @@ class DeleteUserByUsernameUseCase:
     async def execute(self, username: str):
         with self._database.session() as session:
             self._repo.delete(session=session, username=username)
-

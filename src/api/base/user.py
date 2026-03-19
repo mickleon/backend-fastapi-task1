@@ -4,7 +4,9 @@ from src.domain.user.use_cases.create_user import CreateUserUseCase
 from src.domain.user.use_cases.delete_user_by_username import (
     DeleteUserByUsernameUseCase,
 )
-from src.domain.user.use_cases.get_user_by_username import GetUserByUsernameUseCase
+from src.domain.user.use_cases.get_user_by_username import (
+    GetUserByUsernameUseCase,
+)
 from src.domain.user.use_cases.update_user_by_username import (
     UpdateUserByUsernameUseCase,
 )
@@ -38,4 +40,3 @@ async def delete_user_by_username(username: str):
     use_case = DeleteUserByUsernameUseCase()
     await use_case.execute(username)
     return {'message': f'Пользователь "{username}" успешно удален'}
-

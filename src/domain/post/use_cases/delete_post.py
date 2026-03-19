@@ -12,4 +12,3 @@ class DeletePostUseCase:
     async def execute(self, id: uuid.UUID):
         with self._database.session() as session:
             self._repo.delete(session=session, id=id)
-

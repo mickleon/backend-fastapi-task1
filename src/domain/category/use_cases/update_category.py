@@ -17,4 +17,3 @@ class UpdateCategoryUseCase:
             category = self._repo.update(session=session, id=id, data=data)
 
             return CategoryResponseSchema.model_validate(obj=category)
-

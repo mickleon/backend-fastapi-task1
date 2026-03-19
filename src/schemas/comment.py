@@ -16,4 +16,3 @@ class CommentResponseSchema(BaseModel):
     created_at: datetime = Field(description='Дата и время создания')
 
     model_config = ConfigDict(from_attributes=True)
-

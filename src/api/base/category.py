@@ -23,7 +23,9 @@ async def get_category(id: uuid.UUID) -> CategoryResponseSchema:
 
 
 @category_router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_category(data: CategoryRequestSchema) -> CategoryResponseSchema:
+async def create_category(
+    data: CategoryRequestSchema,
+) -> CategoryResponseSchema:
     use_case = CreateCategoryUseCase()
     return await use_case.execute(data=data)
 
@@ -41,4 +43,3 @@ async def delete_category(id: uuid.UUID):
     use_case = DeleteCategoryUseCase()
     await use_case.execute(id)
     return {'message': f'Категория с id "{id}" успешно удаленa'}
-

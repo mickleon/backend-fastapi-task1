@@ -17,4 +17,3 @@ class Location(Base):
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now
     )
-

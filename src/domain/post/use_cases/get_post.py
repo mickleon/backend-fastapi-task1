@@ -15,4 +15,3 @@ class GetPostUseCase:
             post = self._repo.get(session=session, id=id)
 
             return PostResponseSchema.model_validate(obj=post)
-

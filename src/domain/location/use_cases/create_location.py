@@ -13,4 +13,3 @@ class CreateLocationUseCase:
             location = self._repo.create(session=session, data=data)
 
             return LocationResponseSchema.model_validate(obj=location)
-

@@ -13,4 +13,3 @@ class CreateCommentUseCase:
             comment = self._repo.create(session=session, data=data)
 
             return CommentResponseSchema.model_validate(obj=comment)
-

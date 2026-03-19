@@ -29,7 +29,9 @@ async def create_post(data: PostRequestSchema) -> PostResponseSchema:
 
 
 @post_router.put('/{id}')
-async def update_post(id: uuid.UUID, data: PostRequestSchema) -> PostResponseSchema:
+async def update_post(
+    id: uuid.UUID, data: PostRequestSchema
+) -> PostResponseSchema:
     use_case = UpdatePostUseCase()
     return await use_case.execute(id=id, data=data)
 
@@ -39,4 +41,3 @@ async def delete_post(id: uuid.UUID):
     use_case = DeletePostUseCase()
     await use_case.execute(id)
     return {'message': f'Публикация с id "{id}" успешно удаленa'}
-

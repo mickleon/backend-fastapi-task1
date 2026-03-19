@@ -18,4 +18,3 @@ class UpdatePostUseCase:
             post = self._repo.update(session=session, id=id, data=data)
 
             return PostResponseSchema.model_validate(obj=post)
-

@@ -13,4 +13,3 @@ class CreateUserUseCase:
             user = self._repo.create(session=session, data=data)
 
             return UserResponseSchema.model_validate(obj=user)
-

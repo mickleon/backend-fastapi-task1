@@ -14,4 +14,3 @@ class GetCategoryUseCase:
         with self._database.session() as session:
             category = self._repo.get(session=session, id=id)
             return CategoryResponseSchema.model_validate(obj=category)
-

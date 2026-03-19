@@ -44,4 +44,3 @@ class CategoryRepository:
     def delete(self, session: Session, id: uuid.UUID):
         query = delete(self._model).where(self._model.id == id)
         session.execute(query)
-

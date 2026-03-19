@@ -46,4 +46,3 @@ class UserRepository:
     def delete(self, session: Session, username: str):
         query = delete(self._model).where(self._model.username == username)
         session.execute(query)
-

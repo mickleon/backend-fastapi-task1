@@ -15,4 +15,3 @@ class GetLocationUseCase:
             location = self._repo.get(session=session, id=id)
 
             return LocationResponseSchema.model_validate(obj=location)
-
