@@ -3,22 +3,27 @@ from typing import Type
 from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
 
-from src.infrastructure.sqlite.models.location import Location
+from src.core.exceptions.database_exceptions import LocationNotFoundException
+from src.infrastructure.sqlite.models.location import Location as LocationModel
 from src.schemas.location import LocationRequestSchema
 
 
 class LocationRepository:
     def __init__(self):
-        self._model: Type[Location] = Location
+        self._model: Type[LocationModel] = LocationModel
 
-    def get(self, session: Session, id: uuid.UUID) -> Location:
+    def get(self, session: Session, id: uuid.UUID) -> LocationModel:
         query = select(self._model).where(self._model.id == id)
         location = session.scalar(query)
+
+        if not location:
+            raise LocationNotFoundException()
+
         return location
 
     def create(
         self, session: Session, data: LocationRequestSchema
-    ) -> Location:
+    ) -> LocationModel:
         query = (
             insert(self._model)
             .values(data.model_dump(exclude_none=True))
@@ -30,7 +35,7 @@ class LocationRepository:
 
     def update(
         self, session: Session, id: uuid.UUID, data: LocationRequestSchema
-    ) -> Location:
+    ) -> LocationModel:
         query = (
             update(self._model)
             .where(self._model.id == id)
@@ -39,8 +44,18 @@ class LocationRepository:
         )
         location = session.scalar(query)
 
+        if not location:
+            raise LocationNotFoundException()
+
         return location
 
     def delete(self, session: Session, id: uuid.UUID):
-        query = delete(self._model).where(self._model.id == id)
-        session.execute(query)
+        query = (
+            delete(self._model)
+            .where(self._model.id == id)
+            .returning(self._model)
+        )
+        location = session.scalar(query)
+
+        if not location:
+            raise LocationNotFoundException()

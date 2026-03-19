@@ -1,3 +1,7 @@
+from src.core.exceptions.database_exceptions import UserNotFoundException
+from src.core.exceptions.domain_exceptions import (
+    UserNotFoundByUsernameException,
+)
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.user import UserRepository
 
@@ -9,4 +13,7 @@ class DeleteUserByUsernameUseCase:
 
     async def execute(self, username: str):
         with self._database.session() as session:
-            self._repo.delete(session=session, username=username)
+            try:
+                self._repo.delete(session=session, username=username)
+            except UserNotFoundException:
+                raise UserNotFoundByUsernameException(username=username)

@@ -1,6 +1,10 @@
 import uuid
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
+from src.core.exceptions.domain_exceptions import (
+    BaseDomainException,
+    PostNotFoundByIdException,
+)
 from src.domain.post.use_cases.create_post import CreatePostUseCase
 from src.domain.post.use_cases.delete_post import (
     DeletePostUseCase,
@@ -19,13 +23,25 @@ post_router = APIRouter()
 @post_router.get('/{id}')
 async def get_post(id: uuid.UUID) -> PostResponseSchema:
     use_case = GetPostUseCase()
-    return await use_case.execute(id=id)
+    try:
+        post = await use_case.execute(id=id)
+    except PostNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+    return post
 
 
 @post_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_post(data: PostRequestSchema) -> PostResponseSchema:
     use_case = CreatePostUseCase()
-    return await use_case.execute(data=data)
+    try:
+        post = await use_case.execute(data=data)
+    except BaseDomainException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
+        )
+    return post
 
 
 @post_router.put('/{id}')
@@ -33,11 +49,26 @@ async def update_post(
     id: uuid.UUID, data: PostRequestSchema
 ) -> PostResponseSchema:
     use_case = UpdatePostUseCase()
-    return await use_case.execute(id=id, data=data)
+    try:
+        post = await use_case.execute(id=id, data=data)
+    except PostNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+    except BaseDomainException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
+        )
+    return post
 
 
 @post_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id: uuid.UUID):
     use_case = DeletePostUseCase()
-    await use_case.execute(id)
-    return {'message': f'Публикация с id "{id}" успешно удаленa'}
+    try:
+        post = await use_case.execute(id=id)
+    except PostNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+    return post
