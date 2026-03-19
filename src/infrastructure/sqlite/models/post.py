@@ -13,9 +13,7 @@ class Post(Base):
     )
     title: Mapped[str] = mapped_column(nullable=False)
     text: Mapped[str] = mapped_column(nullable=False)
-    pub_date: Mapped[datetime] = mapped_column(
-        nullable=False, default=datetime.now
-    )
+    pub_date: Mapped[datetime] = mapped_column(nullable=False)
     author_id: Mapped[int] = mapped_column(nullable=False)
     location_id: Mapped[uuid.UUID] = mapped_column(nullable=True)
     category_id: Mapped[uuid.UUID] = mapped_column(nullable=True)
