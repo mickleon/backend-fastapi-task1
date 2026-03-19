@@ -1,5 +1,6 @@
 import uuid
 from typing import Type
+from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.post import Post
@@ -11,24 +12,34 @@ class PostRepository:
         self._model: Type[Post] = Post
 
     def get(self, session: Session, id: uuid.UUID) -> Post:
-        query = session.query(self._model).where(self._model.id == id)
+        query = select(self._model).where(self._model.id == id)
+        post = session.scalar(query)
+        return post
 
-        return query.scalar()
-
-    def create(self, session: Session, post: Post) -> Post:
-        session.add(post)
-        session.commit()
+    def create(self, session: Session, data: PostRequestSchema) -> Post:
+        query = (
+            insert(self._model)
+            .values(data.model_dump(exclude_none=True))
+            .returning(self._model)
+        )
+        post = session.scalar(query)
 
         return post
 
-    def update(self, session: Session, post: Post, data: PostRequestSchema):
-        for field, value in data.model_dump(exclude_none=True).items():
-            setattr(post, field, value)
-        session.commit()
+    def update(
+        self, session: Session, id: uuid.UUID, data: PostRequestSchema
+    ) -> Post:
+        query = (
+            update(self._model)
+            .where(self._model.id == id)
+            .values(data.model_dump(exclude_unset=True))
+            .returning(self._model)
+        )
+        post = session.scalar(query)
 
         return post
 
-    def delete(self, session: Session, post: Post):
-        session.delete(post)
-        session.commit()
+    def delete(self, session: Session, id: uuid.UUID):
+        query = delete(self._model).where(self._model.id == id)
+        session.execute(query)
 

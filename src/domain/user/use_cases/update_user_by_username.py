@@ -1,5 +1,3 @@
-from fastapi import HTTPException
-
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.user import UserRepository
 from src.schemas.user import UserRequestSchema, UserResponseSchema
@@ -14,14 +12,9 @@ class UpdateUserByUsernameUseCase:
         self, username: str, data: UserRequestSchema
     ) -> UserResponseSchema:
         with self._database.session() as session:
-            user = self._repo.get(session=session, username=username)
+            user = self._repo.update(
+                session=session, username=username, data=data
+            )
 
-            if user is None:
-                raise HTTPException(
-                    status_code=404, detail=f'Пользователь "{username}" не найден'
-                )
-
-            self._repo.update(session=session, user=user, data=data)
-
-        return UserResponseSchema.model_validate(obj=user)
+            return UserResponseSchema.model_validate(obj=user)
 

@@ -1,4 +1,3 @@
-import uuid
 from fastapi import APIRouter
 from starlette import status
 
@@ -18,7 +17,7 @@ comment_router = APIRouter()
 
 
 @comment_router.get('/{id}')
-async def get_comment(id: uuid.UUID) -> CommentResponseSchema:
+async def get_comment(id: int) -> CommentResponseSchema:
     use_case = GetCommentUseCase()
     return await use_case.execute(id=id)
 
@@ -31,14 +30,14 @@ async def create_comment(data: CommentRequestSchema) -> CommentResponseSchema:
 
 @comment_router.put('/{id}')
 async def update_comment(
-    id: uuid.UUID, data: CommentRequestSchema
+    id: int, data: CommentRequestSchema
 ) -> CommentResponseSchema:
     use_case = UpdateCommentUseCase()
     return await use_case.execute(id=id, data=data)
 
 
 @comment_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_comment(id: uuid.UUID):
+async def delete_comment(id: int):
     use_case = DeleteCommentUseCase()
     await use_case.execute(id)
     return {'message': f'Комментарий с id "{id}" успешно удален'}

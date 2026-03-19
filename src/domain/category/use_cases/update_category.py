@@ -1,5 +1,4 @@
 import uuid
-from fastapi import HTTPException
 
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.category import CategoryRepository
@@ -15,14 +14,7 @@ class UpdateCategoryUseCase:
         self, id: uuid.UUID, data: CategoryRequestSchema
     ) -> CategoryResponseSchema:
         with self._database.session() as session:
-            category = self._repo.get(session=session, id=id)
+            category = self._repo.update(session=session, id=id, data=data)
 
-            if category is None:
-                raise HTTPException(
-                    status_code=404, detail=f'Категория с id "{id}" не найдена'
-                )
-
-            self._repo.update(session=session, category=category, data=data)
-
-        return CategoryResponseSchema.model_validate(obj=category)
+            return CategoryResponseSchema.model_validate(obj=category)
 

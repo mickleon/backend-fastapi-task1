@@ -15,14 +15,7 @@ class UpdatePostUseCase:
         self, id: uuid.UUID, data: PostRequestSchema
     ) -> PostResponseSchema:
         with self._database.session() as session:
-            post = self._repo.get(session=session, id=id)
+            post = self._repo.update(session=session, id=id, data=data)
 
-            if post is None:
-                raise HTTPException(
-                    status_code=404, detail=f'Публикация с id "{id}" не найдена'
-                )
-
-            self._repo.update(session=session, post=post, data=data)
-
-        return PostResponseSchema.model_validate(obj=post)
+            return PostResponseSchema.model_validate(obj=post)
 

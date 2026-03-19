@@ -1,5 +1,6 @@
 import uuid
 from typing import Type
+from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.category import Category
@@ -11,24 +12,36 @@ class CategoryRepository:
         self._model: Type[Category] = Category
 
     def get(self, session: Session, id: uuid.UUID) -> Category:
-        query = session.query(self._model).where(self._model.id == id)
+        query = select(self._model).where(self._model.id == id)
+        category = session.scalar(query)
+        return category
 
-        return query.scalar()
-
-    def create(self, session: Session, category: Category) -> Category:
-        session.add(category)
-        session.commit()
+    def create(
+        self, session: Session, data: CategoryRequestSchema
+    ) -> Category:
+        query = (
+            insert(self._model)
+            .values(data.model_dump(exclude_none=True))
+            .returning(self._model)
+        )
+        category = session.scalar(query)
 
         return category
 
-    def update(self, session: Session, category: Category, data: CategoryRequestSchema):
-        for field, value in data.model_dump(exclude_none=True).items():
-            setattr(category, field, value)
-        session.commit()
+    def update(
+        self, session: Session, id: uuid.UUID, data: CategoryRequestSchema
+    ) -> Category:
+        query = (
+            update(self._model)
+            .where(self._model.id == id)
+            .values(data.model_dump(exclude_unset=True))
+            .returning(self._model)
+        )
+        category = session.scalar(query)
 
         return category
 
-    def delete(self, session: Session, category: Category):
-        session.delete(category)
-        session.commit()
+    def delete(self, session: Session, id: uuid.UUID):
+        query = delete(self._model).where(self._model.id == id)
+        session.execute(query)
 

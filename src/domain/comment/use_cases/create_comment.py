@@ -1,5 +1,4 @@
 from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.models.comment import Comment
 from src.infrastructure.sqlite.repositories.comment import CommentRepository
 from src.schemas.comment import CommentRequestSchema, CommentResponseSchema
 
@@ -11,8 +10,7 @@ class CreateCommentUseCase:
 
     async def execute(self, data: CommentRequestSchema):
         with self._database.session() as session:
-            comment = Comment(**data.model_dump())
-            self._repo.create(session=session, comment=comment)
+            comment = self._repo.create(session=session, data=data)
 
-        return CommentResponseSchema.model_validate(obj=comment)
+            return CommentResponseSchema.model_validate(obj=comment)
 

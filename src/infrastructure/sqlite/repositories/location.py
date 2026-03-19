@@ -1,5 +1,6 @@
 import uuid
 from typing import Type
+from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.location import Location
@@ -11,24 +12,36 @@ class LocationRepository:
         self._model: Type[Location] = Location
 
     def get(self, session: Session, id: uuid.UUID) -> Location:
-        query = session.query(self._model).where(self._model.id == id)
+        query = select(self._model).where(self._model.id == id)
+        location = session.scalar(query)
+        return location
 
-        return query.scalar()
-
-    def create(self, session: Session, location: Location) -> Location:
-        session.add(location)
-        session.commit()
+    def create(
+        self, session: Session, data: LocationRequestSchema
+    ) -> Location:
+        query = (
+            insert(self._model)
+            .values(data.model_dump(exclude_none=True))
+            .returning(self._model)
+        )
+        location = session.scalar(query)
 
         return location
 
-    def update(self, session: Session, location: Location, data: LocationRequestSchema):
-        for field, value in data.model_dump(exclude_none=True).items():
-            setattr(location, field, value)
-        session.commit()
+    def update(
+        self, session: Session, id: uuid.UUID, data: LocationRequestSchema
+    ) -> Location:
+        query = (
+            update(self._model)
+            .where(self._model.id == id)
+            .values(data.model_dump(exclude_unset=True))
+            .returning(self._model)
+        )
+        location = session.scalar(query)
 
         return location
 
-    def delete(self, session: Session, location: Location):
-        session.delete(location)
-        session.commit()
+    def delete(self, session: Session, id: uuid.UUID):
+        query = delete(self._model).where(self._model.id == id)
+        session.execute(query)
 

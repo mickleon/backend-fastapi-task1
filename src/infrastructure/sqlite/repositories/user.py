@@ -1,4 +1,5 @@
 from typing import Type
+from sqlalchemy import insert, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.user import User
@@ -10,29 +11,39 @@ class UserRepository:
         self._model: Type[User] = User
 
     def get(self, session: Session, username: str) -> User:
-        query = session.query(self._model).where(self._model.username == username)
+        query = select(self._model).where(self._model.username == username)
+        user = session.scalar(query)
+        return user
 
-        return query.scalar()
-
-    def create(self, session: Session, user: User) -> User:
-        session.add(user)
-        session.commit()
+    def create(self, session: Session, data: UserRequestSchema) -> User:
+        user_data = {
+            **data.model_dump(exclude={'password'}, exclude_none=True),
+            'password': data.password.get_secret_value(),
+        }
+        query = insert(self._model).values(**user_data).returning(self._model)
+        user = session.scalar(query)
 
         return user
 
-    def update(self, session: Session, user: User, data: UserRequestSchema):
-        for field, value in data.model_dump(
-            exclude_none=True, exclude={'password'}
-        ).items():
-            setattr(user, field, value)
-        session.commit()
+    def update(
+        self, session: Session, username: str, data: UserRequestSchema
+    ) -> User:
+        user_data = data.model_dump(exclude_unset=True)
 
-        if data.password is not None:
-            user.password = data.password.get_secret_value()
+        if 'password' in user_data:
+            user_data['password'] = user_data['password'].get_secret_value()
+
+        query = (
+            update(self._model)
+            .where(self._model.username == username)
+            .values(**user_data)
+            .returning(self._model)
+        )
+        user = session.scalar(query)
 
         return user
 
-    def delete(self, session: Session, user: User):
-        session.delete(user)
-        session.commit()
+    def delete(self, session: Session, username: str):
+        query = delete(self._model).where(self._model.username == username)
+        session.execute(query)
 

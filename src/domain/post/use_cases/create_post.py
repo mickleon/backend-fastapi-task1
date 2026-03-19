@@ -1,5 +1,4 @@
 from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.models.post import Post
 from src.infrastructure.sqlite.repositories.post import PostRepository
 from src.schemas.post import PostRequestSchema, PostResponseSchema
 
@@ -11,8 +10,7 @@ class CreatePostUseCase:
 
     async def execute(self, data: PostRequestSchema):
         with self._database.session() as session:
-            post = Post(**data.model_dump())
-            self._repo.create(session=session, post=post)
+            post = self._repo.create(session=session, data=data)
 
-        return PostResponseSchema.model_validate(obj=post)
+            return PostResponseSchema.model_validate(obj=post)
 
