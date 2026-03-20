@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 class Database:
-    def __init__(self):
+    def __init__(self) -> None:
         self._db_url = 'sqlite:///sqlite.db'
         self._engine = create_engine(self._db_url)
 

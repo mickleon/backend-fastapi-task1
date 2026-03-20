@@ -14,7 +14,7 @@ from src.schemas.comment import CommentRequestSchema
 
 
 class CommentRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._model: Type[CommentModel] = CommentModel
         self._author_model: Type[UserModel] = UserModel
         self._post_model: Type[PostModel] = PostModel
@@ -83,7 +83,7 @@ class CommentRepository:
 
         return comment
 
-    def delete(self, session: Session, id: int):
+    def delete(self, session: Session, id: int) -> None:
         query = delete(self._model).where(self._model.id == id)
         result = session.execute(query)
 

@@ -17,7 +17,7 @@ from src.schemas.post import PostRequestSchema
 
 
 class PostRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._model: Type[PostModel] = PostModel
         self._author_model: Type[UserModel] = UserModel
         self._location_model: Type[LocationModel] = LocationModel
@@ -105,7 +105,7 @@ class PostRepository:
 
         return post
 
-    def delete(self, session: Session, id: uuid.UUID):
+    def delete(self, session: Session, id: uuid.UUID) -> None:
         query = delete(self._model).where(self._model.id == id)
         result = session.execute(query)
 

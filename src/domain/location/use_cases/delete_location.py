@@ -11,7 +11,7 @@ class DeleteLocationUseCase:
         self._database = database
         self._repo = LocationRepository()
 
-    async def execute(self, id: uuid.UUID):
+    async def execute(self, id: uuid.UUID) -> None:
         with self._database.session() as session:
             try:
                 self._repo.delete(session=session, id=id)

@@ -11,7 +11,7 @@ class DeleteUserByUsernameUseCase:
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, username: str):
+    async def execute(self, username: str) -> None:
         with self._database.session() as session:
             try:
                 self._repo.delete(session=session, username=username)

@@ -9,7 +9,7 @@ from src.schemas.location import LocationRequestSchema
 
 
 class LocationRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._model: Type[LocationModel] = LocationModel
 
     def get(self, session: Session, id: uuid.UUID) -> LocationModel:
@@ -49,8 +49,8 @@ class LocationRepository:
 
         return location
 
-    def delete(self, session: Session, username: str):
-        query = delete(self._model).where(self._model.username == username)
+    def delete(self, session: Session, id: uuid.UUID) -> None:
+        query = delete(self._model).where(self._model.id == id)
         result = session.execute(query)
 
         if not result.rowcount:

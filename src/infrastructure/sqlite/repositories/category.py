@@ -9,7 +9,7 @@ from src.schemas.category import CategoryRequestSchema
 
 
 class CategoryRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._model: Type[CategoryModel] = CategoryModel
 
     def get(self, session: Session, id: uuid.UUID) -> CategoryModel:
@@ -49,7 +49,7 @@ class CategoryRepository:
 
         return category
 
-    def delete(self, session: Session, id: uuid.UUID):
+    def delete(self, session: Session, id: uuid.UUID) -> None:
         query = delete(self._model).where(self._model.id == id)
         result = session.execute(query)
 

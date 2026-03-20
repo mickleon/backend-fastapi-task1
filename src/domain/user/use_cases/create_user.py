@@ -15,7 +15,7 @@ class CreateUserUseCase:
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, data: UserRequestSchema):
+    async def execute(self, data: UserRequestSchema) -> UserResponseSchema:
         with self._database.session() as session:
             try:
                 user = self._repo.create(session=session, data=data)

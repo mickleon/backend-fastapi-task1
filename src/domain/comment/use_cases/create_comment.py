@@ -16,7 +16,9 @@ class CreateCommentUseCase:
         self._database = database
         self._repo = CommentRepository()
 
-    async def execute(self, data: CommentRequestSchema):
+    async def execute(
+        self, data: CommentRequestSchema
+    ) -> CommentResponseSchema:
         with self._database.session() as session:
             try:
                 comment = self._repo.create(session=session, data=data)

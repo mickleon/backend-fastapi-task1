@@ -12,7 +12,7 @@ from src.core.exceptions.database_exceptions import (
 
 
 class UserRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._model: Type[UserModel] = UserModel
 
     def get(self, session: Session, username: str) -> UserModel:
@@ -89,7 +89,7 @@ class UserRepository:
 
         return user
 
-    def delete(self, session: Session, username: str):
+    def delete(self, session: Session, username: str) -> None:
         query = delete(self._model).where(self._model.username == username)
         result = session.execute(query)
 

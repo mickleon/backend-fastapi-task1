@@ -18,7 +18,7 @@ class CreatePostUseCase:
         self._database = database
         self._repo = PostRepository()
 
-    async def execute(self, data: PostRequestSchema):
+    async def execute(self, data: PostRequestSchema) -> PostResponseSchema:
         with self._database.session() as session:
             try:
                 post = self._repo.create(session=session, data=data)

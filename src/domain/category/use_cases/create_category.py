@@ -8,7 +8,9 @@ class CreateCategoryUseCase:
         self._database = database
         self._repo = CategoryRepository()
 
-    async def execute(self, data: CategoryRequestSchema):
+    async def execute(
+        self, data: CategoryRequestSchema
+    ) -> CategoryResponseSchema:
         with self._database.session() as session:
             category = self._repo.create(session=session, data=data)
 

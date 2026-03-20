@@ -8,7 +8,9 @@ class CreateLocationUseCase:
         self._database = database
         self._repo = LocationRepository()
 
-    async def execute(self, data: LocationRequestSchema):
+    async def execute(
+        self, data: LocationRequestSchema
+    ) -> LocationResponseSchema:
         with self._database.session() as session:
             location = self._repo.create(session=session, data=data)
 

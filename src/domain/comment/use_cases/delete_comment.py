@@ -9,7 +9,7 @@ class DeleteCommentUseCase:
         self._database = database
         self._repo = CommentRepository()
 
-    async def execute(self, id: int):
+    async def execute(self, id: int) -> None:
         with self._database.session() as session:
             try:
                 self._repo.delete(session=session, id=id)
