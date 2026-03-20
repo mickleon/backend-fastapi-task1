@@ -2,8 +2,10 @@ import uuid
 from fastapi import APIRouter, HTTPException, status
 
 from src.core.exceptions.domain_exceptions import (
-    BaseDomainException,
+    CategoryNotFoundByIdException,
+    LocationNotFoundByIdException,
     PostNotFoundByIdException,
+    UserNotFoundByIdException,
 )
 from src.domain.post.use_cases.create_post import CreatePostUseCase
 from src.domain.post.use_cases.delete_post import (
@@ -37,7 +39,11 @@ async def create_post(data: PostRequestSchema) -> PostResponseSchema:
     use_case = CreatePostUseCase()
     try:
         post = await use_case.execute(data=data)
-    except BaseDomainException as e:
+    except (
+        UserNotFoundByIdException,
+        LocationNotFoundByIdException,
+        CategoryNotFoundByIdException,
+    ) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
@@ -55,7 +61,11 @@ async def update_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    except BaseDomainException as e:
+    except (
+        UserNotFoundByIdException,
+        LocationNotFoundByIdException,
+        CategoryNotFoundByIdException,
+    ) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )

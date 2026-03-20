@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 
 from src.core.exceptions.domain_exceptions import (
-    BaseDomainException,
     CommentNotFoundByIdException,
+    PostNotFoundByIdException,
+    UserNotFoundByIdException,
 )
 from src.domain.comment.use_cases.create_comment import CreateCommentUseCase
 from src.domain.comment.use_cases.delete_comment import (
@@ -36,7 +37,7 @@ async def create_comment(data: CommentRequestSchema) -> CommentResponseSchema:
     use_case = CreateCommentUseCase()
     try:
         comment = await use_case.execute(data=data)
-    except BaseDomainException as e:
+    except (UserNotFoundByIdException, PostNotFoundByIdException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
@@ -54,7 +55,7 @@ async def update_comment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    except BaseDomainException as e:
+    except (UserNotFoundByIdException, PostNotFoundByIdException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )

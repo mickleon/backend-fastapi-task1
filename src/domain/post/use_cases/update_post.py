@@ -1,5 +1,4 @@
 import uuid
-from fastapi import HTTPException
 
 from src.core.exceptions.database_exceptions import (
     CategoryNotFoundException,

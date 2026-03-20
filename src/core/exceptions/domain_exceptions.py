@@ -32,28 +32,25 @@ class UserNotFoundByUsernameException(BaseDomainException):
         super().__init__(detail=self._exception_text_template)
 
 
-class UserUsernameIsNotUniqueException(BaseDomainException):
-    _exception_text_template = (
-        "Пользователь с логином '{username}' уже существует"
-    )
-
-    def __init__(self, username: str) -> None:
-        self._exception_text_template = self._exception_text_template.format(
-            username=username
-        )
+class UserUsernameOrEmailIsNotUniqueException(BaseDomainException):
+    def __init__(self, detail: str) -> None:
+        self._exception_text_template = detail
 
         super().__init__(detail=self._exception_text_template)
 
+    @classmethod
+    def from_username(
+        cls, username: str
+    ) -> 'UserUsernameOrEmailIsNotUniqueException':
+        detail = f"Пользователь с логином '{username}' уже существует"
+        return cls(detail=detail)
 
-class UserEmailIsNotUniqueException(BaseDomainException):
-    _exception_text_template = "Пользователь с email '{email}' уже существует"
-
-    def __init__(self, email: EmailStr) -> None:
-        self._exception_text_template = self._exception_text_template.format(
-            email=email
-        )
-
-        super().__init__(detail=self._exception_text_template)
+    @classmethod
+    def from_email(
+        cls, email: EmailStr
+    ) -> 'UserUsernameOrEmailIsNotUniqueException':
+        detail = f"Пользователь с email '{email}' уже существует"
+        return cls(detail=detail)
 
 
 class CategoryNotFoundByIdException(BaseDomainException):

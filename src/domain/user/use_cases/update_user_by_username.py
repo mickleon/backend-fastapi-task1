@@ -4,9 +4,8 @@ from src.core.exceptions.database_exceptions import (
     UserUsernameAlreadyExistsException,
 )
 from src.core.exceptions.domain_exceptions import (
-    UserEmailIsNotUniqueException,
     UserNotFoundByUsernameException,
-    UserUsernameIsNotUniqueException,
+    UserUsernameOrEmailIsNotUniqueException,
 )
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.user import UserRepository
@@ -29,8 +28,12 @@ class UpdateUserByUsernameUseCase:
             except UserNotFoundException:
                 raise UserNotFoundByUsernameException(username=username)
             except UserUsernameAlreadyExistsException:
-                raise UserUsernameIsNotUniqueException(username=data.username)
+                raise UserUsernameOrEmailIsNotUniqueException.from_username(
+                    username=data.username
+                )
             except UserEmailAlreadyExistsException:
-                raise UserEmailIsNotUniqueException(email=data.email)
+                raise UserUsernameOrEmailIsNotUniqueException.from_email(
+                    email=data.email
+                )
 
             return UserResponseSchema.model_validate(obj=user)

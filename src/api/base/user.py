@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from src.core.exceptions.domain_exceptions import (
-    BaseDomainException,
     UserNotFoundByUsernameException,
+    UserUsernameOrEmailIsNotUniqueException,
 )
 from src.domain.user.use_cases.create_user import CreateUserUseCase
 from src.domain.user.use_cases.delete_user_by_username import (
@@ -36,7 +36,7 @@ async def create_user(data: UserRequestSchema) -> UserResponseSchema:
     use_case = CreateUserUseCase()
     try:
         user = await use_case.execute(data=data)
-    except BaseDomainException as e:
+    except UserUsernameOrEmailIsNotUniqueException as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=e.get_detail()
         )
@@ -54,7 +54,7 @@ async def update_user_by_username(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    except BaseDomainException as e:
+    except UserUsernameOrEmailIsNotUniqueException as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=e.get_detail()
         )
