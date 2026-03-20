@@ -84,12 +84,8 @@ class CommentRepository:
         return comment
 
     def delete(self, session: Session, id: int):
-        query = (
-            delete(self._model)
-            .where(self._model.id == id)
-            .returning(self._model)
-        )
-        comment = session.scalar(query)
+        query = delete(self._model).where(self._model.id == id)
+        result = session.execute(query)
 
-        if not comment:
+        if not result.rowcount:
             raise CommentNotFoundException()

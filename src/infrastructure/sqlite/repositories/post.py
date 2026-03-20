@@ -106,12 +106,8 @@ class PostRepository:
         return post
 
     def delete(self, session: Session, id: uuid.UUID):
-        query = (
-            delete(self._model)
-            .where(self._model.id == id)
-            .returning(self._model)
-        )
-        post = session.scalar(query)
+        query = delete(self._model).where(self._model.id == id)
+        result = session.execute(query)
 
-        if not post:
+        if not result.rowcount:
             raise PostNotFoundException()

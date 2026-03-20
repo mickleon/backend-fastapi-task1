@@ -40,11 +40,11 @@ class UserRepository:
             elif existing_user.email == data.email:
                 raise UserEmailAlreadyExistsException()
 
-        user_data = {
-            **data.model_dump(exclude={'password'}, exclude_none=True),
-            'password': data.password.get_secret_value(),
-        }
-        query = insert(self._model).values(**user_data).returning(self._model)
+        query = (
+            insert(self._model)
+            .values(**data.model_dump())
+            .returning(self._model)
+        )
         user = session.scalar(query)
 
         return user
@@ -77,7 +77,7 @@ class UserRepository:
         user_data = data.model_dump(exclude_unset=True)
 
         if 'password' in user_data:
-            user_data['password'] = user_data['password'].get_secret_value()
+            user_data['password'] = user_data['password']
 
         query = (
             update(self._model)
@@ -90,12 +90,8 @@ class UserRepository:
         return user
 
     def delete(self, session: Session, username: str):
-        query = (
-            delete(self._model)
-            .where(self._model.username == username)
-            .returning(self._model)
-        )
-        user = session.scalar(query)
+        query = delete(self._model).where(self._model.username == username)
+        result = session.execute(query)
 
-        if not user:
+        if not result.rowcount:
             raise UserNotFoundException()

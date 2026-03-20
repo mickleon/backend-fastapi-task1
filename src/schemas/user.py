@@ -4,7 +4,6 @@ from pydantic import (
     ConfigDict,
     EmailStr,
     Field,
-    SecretStr,
     field_validator,
 )
 from datetime import datetime
@@ -28,16 +27,15 @@ class UserBaseSchema(BaseModel):
 
 
 class UserRequestSchema(UserBaseSchema):
-    password: SecretStr = Field(min_length=8, description='Пароль')
+    password: str = Field(min_length=8, description='Пароль')
 
     @field_validator('password', mode='after')
     @staticmethod
-    def check_password(password: SecretStr) -> SecretStr:
-        password_str = password.get_secret_value()
-        has_upper = any(c.isupper() for c in password_str)
-        has_lower = any(c.islower() for c in password_str)
-        has_digit = any(c.isdigit() for c in password_str)
-        has_special = any(not c.isalnum() for c in password_str)
+    def check_password(password: str) -> str:
+        has_upper = any(c.isupper() for c in password)
+        has_lower = any(c.islower() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        has_special = any(not c.isalnum() for c in password)
 
         if not all([has_upper, has_lower, has_digit, has_special]):
             raise HTTPException(

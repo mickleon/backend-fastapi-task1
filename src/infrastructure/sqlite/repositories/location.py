@@ -49,13 +49,9 @@ class LocationRepository:
 
         return location
 
-    def delete(self, session: Session, id: uuid.UUID):
-        query = (
-            delete(self._model)
-            .where(self._model.id == id)
-            .returning(self._model)
-        )
-        location = session.scalar(query)
+    def delete(self, session: Session, username: str):
+        query = delete(self._model).where(self._model.username == username)
+        result = session.execute(query)
 
-        if not location:
+        if not result.rowcount:
             raise LocationNotFoundException()

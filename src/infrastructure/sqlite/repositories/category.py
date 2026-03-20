@@ -50,12 +50,8 @@ class CategoryRepository:
         return category
 
     def delete(self, session: Session, id: uuid.UUID):
-        query = (
-            delete(self._model)
-            .where(self._model.id == id)
-            .returning(self._model)
-        )
-        category = session.scalar(query)
+        query = delete(self._model).where(self._model.id == id)
+        result = session.execute(query)
 
-        if not category:
+        if not result.rowcount:
             raise CategoryNotFoundException()
