@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.infrastructure.sqlite.database import Base
@@ -14,10 +15,19 @@ class Post(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     text: Mapped[str] = mapped_column(nullable=False)
     pub_date: Mapped[datetime] = mapped_column(nullable=False)
-    author_id: Mapped[int] = mapped_column(nullable=False)
-    location_id: Mapped[uuid.UUID] = mapped_column(nullable=True)
-    category_id: Mapped[uuid.UUID] = mapped_column(nullable=True)
-    image_ulr: Mapped[str] = mapped_column(nullable=True)
+    author_id: Mapped[int] = mapped_column(
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+    )
+    location_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey('locations.id', ondelete='SET NULL'),
+        nullable=True,
+    )
+    category_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey('categories.id', ondelete='SET NULL'),
+        nullable=True,
+    )
+    image_url: Mapped[str | None] = mapped_column(nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now

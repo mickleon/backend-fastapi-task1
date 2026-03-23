@@ -34,7 +34,7 @@ class UserRepository:
             )
         )
 
-        if existing_user:
+        if existing_user is not None:
             if existing_user.username == data.username:
                 raise UserUsernameAlreadyExistsException()
             elif existing_user.email == data.email:

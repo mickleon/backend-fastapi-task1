@@ -37,12 +37,12 @@ class PostRepository:
         if not author:
             raise UserNotFoundException()
 
-        if data.location_id:
+        if data.location_id is not None:
             location = session.get(self._location_model, data.location_id)
             if not location:
                 raise LocationNotFoundException()
 
-        if data.category_id:
+        if data.category_id is not None:
             category = session.get(self._category_model, data.category_id)
             if not category:
                 raise CategoryNotFoundException()
