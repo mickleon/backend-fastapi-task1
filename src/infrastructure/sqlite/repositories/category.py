@@ -1,6 +1,6 @@
 import uuid
-from typing import Type
-from sqlalchemy import insert, select, delete, update
+from typing import Type, cast
+from sqlalchemy import CursorResult, insert, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.core.exceptions.database_exceptions import CategoryNotFoundException
@@ -51,7 +51,7 @@ class CategoryRepository:
 
     def delete(self, session: Session, id: uuid.UUID) -> None:
         query = delete(self._model).where(self._model.id == id)
-        result = session.execute(query)
+        result = cast(CursorResult, session.execute(query))
 
         if not result.rowcount:
             raise CategoryNotFoundException()

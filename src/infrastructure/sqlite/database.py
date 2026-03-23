@@ -11,7 +11,7 @@ class Database:
         self._engine = create_engine(self._db_url)
 
         @event.listens_for(self._engine, 'connect')
-        def _set_sqlite_pragma(dbapi_connection, connection_record):  # type: ignore[no-untyped-def]
+        def _set_sqlite_pragma(dbapi_connection, connection_record):
             cursor = dbapi_connection.cursor()
             cursor.execute('PRAGMA foreign_keys=ON')
             cursor.close()

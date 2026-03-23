@@ -1,5 +1,5 @@
-from typing import Type
-from sqlalchemy import insert, or_, select, delete, update
+from typing import Type, cast
+from sqlalchemy import CursorResult, insert, or_, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.user import User as UserModel
@@ -91,7 +91,7 @@ class UserRepository:
 
     def delete(self, session: Session, username: str) -> None:
         query = delete(self._model).where(self._model.username == username)
-        result = session.execute(query)
+        result = cast(CursorResult, session.execute(query))
 
         if not result.rowcount:
             raise UserNotFoundException()
