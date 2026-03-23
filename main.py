@@ -2,7 +2,6 @@ import asyncio
 import uvicorn
 
 from src.app import create_app
-from src.infrastructure.sqlite.database import database
 
 app = create_app()
 
@@ -15,8 +14,6 @@ async def run() -> None:
     )
     server = uvicorn.Server(config=config)
     tasks = (asyncio.create_task(server.serve()),)
-
-    database.create_tables()
 
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
