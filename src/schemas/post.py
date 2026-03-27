@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class PostBaseSchema(BaseModel):
+    id: uuid.UUID = Field(description='ID поста')
     title: str = Field(max_length=256, description='Заголовок')
     text: str = Field(max_length=5000, description='Текст')
     pub_date: datetime = Field(
@@ -32,3 +33,10 @@ class PostResponseSchema(PostBaseSchema):
     created_at: datetime = Field(description='Дата и время создания')
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PostsPageResponseSchema(BaseModel):
+    items: list[PostResponseSchema] = Field(
+        default_factory=list, description='Список публикаций'
+    )
+    has_next: bool = Field(description='Есть ли следующая страница')

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from starlette import status
 from src.core.exceptions.domain_exceptions import (
     UserNotFoundByUsernameException,
@@ -11,9 +11,13 @@ from src.domain.user.use_cases.delete_user_by_username import (
 from src.domain.user.use_cases.get_user_by_username import (
     GetUserByUsernameUseCase,
 )
+from src.domain.user.use_cases.get_user_posts_by_username import (
+    GetUserPostsByUsernameUseCase,
+)
 from src.domain.user.use_cases.update_user_by_username import (
     UpdateUserByUsernameUseCase,
 )
+from src.schemas.post import PostsPageResponseSchema
 from src.schemas.user import UserResponseSchema, UserRequestSchema
 
 user_router = APIRouter()
@@ -29,6 +33,24 @@ async def get_user_by_username(username: str) -> UserResponseSchema:
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
     return user
+
+
+@user_router.get('/{username}/posts')
+async def get_user_posts_by_username(
+    username: str,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
+) -> PostsPageResponseSchema:
+    use_case = GetUserPostsByUsernameUseCase()
+    try:
+        posts = await use_case.execute(
+            username=username, page=page, page_size=page_size
+        )
+    except UserNotFoundByUsernameException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+    return posts
 
 
 @user_router.post('/', status_code=status.HTTP_201_CREATED)

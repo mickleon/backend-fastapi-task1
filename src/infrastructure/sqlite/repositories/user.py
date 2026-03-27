@@ -3,6 +3,7 @@ from sqlalchemy import CursorResult, insert, or_, select, delete, update
 from sqlalchemy.orm import Session
 
 from src.infrastructure.sqlite.models.user import User as UserModel
+from src.infrastructure.sqlite.models.post import Post as PostModel
 from src.schemas.user import UserRequestSchema
 from src.core.exceptions.database_exceptions import (
     UserEmailAlreadyExistsException,
@@ -14,6 +15,7 @@ from src.core.exceptions.database_exceptions import (
 class UserRepository:
     def __init__(self) -> None:
         self._model: Type[UserModel] = UserModel
+        self._post_model: Type[PostModel] = PostModel
 
     def get(self, session: Session, username: str) -> UserModel:
         query = select(self._model).where(self._model.username == username)
@@ -23,6 +25,29 @@ class UserRepository:
             raise UserNotFoundException()
 
         return user
+
+    def get_posts(
+        self,
+        session: Session,
+        username: str,
+        offset: int,
+        limit: int,
+    ) -> list[PostModel]:
+        query = select(self._model).where(self._model.username == username)
+        user = session.scalar(query)
+
+        if not user:
+            raise UserNotFoundException()
+
+        query = (
+            select(self._post_model)
+            .where(self._post_model.author_id == user.id)
+            .order_by(self._post_model.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        posts = session.scalars(query).all()
+        return list(posts)
 
     def create(self, session: Session, data: UserRequestSchema) -> UserModel:
         existing_user = session.scalar(
