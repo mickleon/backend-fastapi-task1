@@ -1,5 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.api.depends import (
+    create_comment_use_case,
+    delete_comment_use_case,
+    get_comment_use_case,
+    update_comment_use_case,
+)
 from src.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
     PostNotFoundByIdException,
@@ -21,36 +27,39 @@ comment_router = APIRouter()
 
 
 @comment_router.get('/{id}')
-async def get_comment(id: int) -> CommentResponseSchema:
-    use_case = GetCommentUseCase()
+async def get_comment(
+    id: int,
+    use_case: GetCommentUseCase = Depends(get_comment_use_case),
+) -> CommentResponseSchema:
     try:
-        comment = await use_case.execute(id=id)
+        return await use_case.execute(id=id)
     except CommentNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return comment
 
 
 @comment_router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_comment(data: CommentRequestSchema) -> CommentResponseSchema:
-    use_case = CreateCommentUseCase()
+async def create_comment(
+    data: CommentRequestSchema,
+    use_case: CreateCommentUseCase = Depends(create_comment_use_case),
+) -> CommentResponseSchema:
     try:
-        comment = await use_case.execute(data=data)
+        return await use_case.execute(data=data)
     except (UserNotFoundByIdException, PostNotFoundByIdException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
-    return comment
 
 
 @comment_router.put('/{id}')
 async def update_comment(
-    id: int, data: CommentRequestSchema
+    id: int,
+    data: CommentRequestSchema,
+    use_case: UpdateCommentUseCase = Depends(update_comment_use_case),
 ) -> CommentResponseSchema:
-    use_case = UpdateCommentUseCase()
     try:
-        comment = await use_case.execute(id=id, data=data)
+        return await use_case.execute(id=id, data=data)
     except CommentNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
@@ -59,16 +68,16 @@ async def update_comment(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
-    return comment
 
 
 @comment_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_comment(id: int):
-    use_case = DeleteCommentUseCase()
+async def delete_comment(
+    id: int,
+    use_case: DeleteCommentUseCase = Depends(delete_comment_use_case),
+):
     try:
-        comment = await use_case.execute(id=id)
+        return await use_case.execute(id=id)
     except CommentNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return comment

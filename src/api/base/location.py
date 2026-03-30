@@ -1,6 +1,12 @@
 import uuid
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.api.depends import (
+    create_location_use_case,
+    delete_location_use_case,
+    get_location_use_case,
+    update_location_use_case,
+)
 from src.core.exceptions.domain_exceptions import LocationNotFoundByIdException
 from src.domain.location.use_cases.create_location import CreateLocationUseCase
 from src.domain.location.use_cases.delete_location import (
@@ -18,43 +24,45 @@ location_router = APIRouter()
 
 
 @location_router.get('/{id}')
-async def get_location(id: uuid.UUID) -> LocationResponseSchema:
-    use_case = GetLocationUseCase()
+async def get_location(
+    id: uuid.UUID,
+    use_case: GetLocationUseCase = Depends(get_location_use_case),
+) -> LocationResponseSchema:
     try:
-        location = await use_case.execute(id=id)
+        return await use_case.execute(id=id)
     except LocationNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return location
 
 
 @location_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_location(
     data: LocationRequestSchema,
+    use_case: CreateLocationUseCase = Depends(create_location_use_case),
 ) -> LocationResponseSchema:
-    use_case = CreateLocationUseCase()
-    location = await use_case.execute(data=data)
-    return location
+    return await use_case.execute(data=data)
 
 
 @location_router.put('/{id}')
 async def update_location(
-    id: uuid.UUID, data: LocationRequestSchema
+    id: uuid.UUID,
+    data: LocationRequestSchema,
+    use_case: UpdateLocationUseCase = Depends(update_location_use_case),
 ) -> LocationResponseSchema:
-    use_case = UpdateLocationUseCase()
     try:
-        location = await use_case.execute(id=id, data=data)
+        return await use_case.execute(id=id, data=data)
     except LocationNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return location
 
 
 @location_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_location(id: uuid.UUID):
-    use_case = DeleteLocationUseCase()
+async def delete_location(
+    id: uuid.UUID,
+    use_case: DeleteLocationUseCase = Depends(delete_location_use_case),
+):
     try:
         await use_case.execute(id)
     except LocationNotFoundByIdException as e:

@@ -1,6 +1,12 @@
 import uuid
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.api.depends import (
+    create_category_use_case,
+    delete_category_use_case,
+    get_category_use_case,
+    update_category_use_case,
+)
 from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException
 from src.domain.category.use_cases.create_category import CreateCategoryUseCase
 from src.domain.category.use_cases.delete_category import (
@@ -18,43 +24,45 @@ category_router = APIRouter()
 
 
 @category_router.get('/{id}')
-async def get_category(id: uuid.UUID) -> CategoryResponseSchema:
-    use_case = GetCategoryUseCase()
+async def get_category(
+    id: uuid.UUID,
+    use_case: GetCategoryUseCase = Depends(get_category_use_case),
+) -> CategoryResponseSchema:
     try:
-        category = await use_case.execute(id=id)
+        return await use_case.execute(id=id)
     except CategoryNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return category
 
 
 @category_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_category(
     data: CategoryRequestSchema,
+    use_case: CreateCategoryUseCase = Depends(create_category_use_case),
 ) -> CategoryResponseSchema:
-    use_case = CreateCategoryUseCase()
-    category = await use_case.execute(data=data)
-    return category
+    return await use_case.execute(data=data)
 
 
 @category_router.put('/{id}')
 async def update_category(
-    id: uuid.UUID, data: CategoryRequestSchema
+    id: uuid.UUID,
+    data: CategoryRequestSchema,
+    use_case: UpdateCategoryUseCase = Depends(update_category_use_case),
 ) -> CategoryResponseSchema:
-    use_case = UpdateCategoryUseCase()
     try:
-        category = await use_case.execute(id=id, data=data)
+        return await use_case.execute(id=id, data=data)
     except CategoryNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    return category
 
 
 @category_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(id: uuid.UUID):
-    use_case = DeleteCategoryUseCase()
+async def delete_category(
+    id: uuid.UUID,
+    use_case: DeleteCategoryUseCase = Depends(delete_category_use_case),
+):
     try:
         await use_case.execute(id)
     except CategoryNotFoundByIdException as e:
