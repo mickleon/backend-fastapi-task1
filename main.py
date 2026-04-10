@@ -1,6 +1,7 @@
 import asyncio
 import uvicorn
 
+from src.infrastructure.sqlite.database import database
 from src.app import create_app
 
 app = create_app()
@@ -19,5 +20,6 @@ async def run() -> None:
 
 
 if __name__ == '__main__':
+    database.run_migraions()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(run())
