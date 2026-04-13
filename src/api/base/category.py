@@ -20,10 +20,10 @@ from src.domain.category.use_cases.update_category import (
 )
 from src.schemas.category import CategoryResponseSchema, CategoryRequestSchema
 
-category_router = APIRouter()
+router = APIRouter()
 
 
-@category_router.get('/{id}')
+@router.get('/{id}', response_model=CategoryResponseSchema)
 async def get_category(
     id: uuid.UUID,
     use_case: GetCategoryUseCase = Depends(get_category_use_case),
@@ -36,7 +36,11 @@ async def get_category(
         )
 
 
-@category_router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post(
+    '/',
+    status_code=status.HTTP_201_CREATED,
+    response_model=CategoryResponseSchema,
+)
 async def create_category(
     data: CategoryRequestSchema,
     use_case: CreateCategoryUseCase = Depends(create_category_use_case),
@@ -44,7 +48,7 @@ async def create_category(
     return await use_case.execute(data=data)
 
 
-@category_router.put('/{id}')
+@router.put('/{id}', response_model=CategoryResponseSchema)
 async def update_category(
     id: uuid.UUID,
     data: CategoryRequestSchema,
@@ -58,7 +62,7 @@ async def update_category(
         )
 
 
-@category_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
     id: uuid.UUID,
     use_case: DeleteCategoryUseCase = Depends(delete_category_use_case),

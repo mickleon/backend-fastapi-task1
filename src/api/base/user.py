@@ -27,10 +27,10 @@ from src.domain.user.use_cases.update_user_by_username import (
 from src.schemas.post import PostsPageResponseSchema
 from src.schemas.user import UserResponseSchema, UserRequestSchema
 
-user_router = APIRouter()
+router = APIRouter()
 
 
-@user_router.get('/{username}')
+@router.get('/{username}', response_model=UserResponseSchema)
 async def get_user_by_username(
     username: str,
     use_case: GetUserByUsernameUseCase = Depends(
@@ -45,7 +45,7 @@ async def get_user_by_username(
         )
 
 
-@user_router.get('/{username}/posts')
+@router.get('/{username}/posts', response_model=PostsPageResponseSchema)
 async def get_user_posts_by_username(
     username: str,
     page: int = Query(default=1, ge=1),
@@ -64,7 +64,9 @@ async def get_user_posts_by_username(
         )
 
 
-@user_router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post(
+    '/', status_code=status.HTTP_201_CREATED, response_model=UserResponseSchema
+)
 async def create_user(
     data: UserRequestSchema,
     use_case: CreateUserUseCase = Depends(create_user_use_case),
@@ -77,7 +79,7 @@ async def create_user(
         )
 
 
-@user_router.put('/{username}')
+@router.put('/{username}', response_model=UserResponseSchema)
 async def update_user_by_username(
     username: str,
     data: UserRequestSchema,
@@ -97,7 +99,7 @@ async def update_user_by_username(
         )
 
 
-@user_router.delete('/{username}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{username}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_by_username(
     username: str,
     use_case: DeleteUserByUsernameUseCase = Depends(

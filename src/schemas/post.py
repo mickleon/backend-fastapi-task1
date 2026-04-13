@@ -19,7 +19,6 @@ from src.resources.field_description import (
 
 
 class PostBaseSchema(BaseModel):
-    id: uuid.UUID = Field(description=POST_ID)
     title: str = Field(max_length=256, description=TITLE)
     text: str = Field(max_length=5000, description=TEXT)
     pub_date: datetime = Field(
@@ -43,6 +42,7 @@ class PostRequestSchema(PostBaseSchema):
 
 
 class PostResponseSchema(PostBaseSchema):
+    id: uuid.UUID = Field(description=POST_ID)
     created_at: datetime = Field(description=CREATED_AT)
 
     model_config = ConfigDict(from_attributes=True)

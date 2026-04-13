@@ -8,6 +8,7 @@ from src.core.exceptions.domain_exceptions import (
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.user import UserRepository
 from src.schemas.user import UserRequestSchema, UserResponseSchema
+from src.resources.auth import get_password_hash
 
 
 class CreateUserUseCase:
@@ -16,6 +17,7 @@ class CreateUserUseCase:
         self._repo = UserRepository()
 
     async def execute(self, data: UserRequestSchema) -> UserResponseSchema:
+        data.password = get_password_hash(password=data.password)
         with self._database.session() as session:
             try:
                 user = self._repo.create(session=session, data=data)

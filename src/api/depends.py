@@ -27,6 +27,18 @@ from src.domain.user.use_cases.get_user_posts_by_username import (
 from src.domain.user.use_cases.update_user_by_username import (
     UpdateUserByUsernameUseCase,
 )
+from src.domain.auth.use_cases.authenticate_user import AuthenticateUserUseCase
+from src.domain.auth.use_cases.create_access_token import (
+    CreateAccessTokenUseCase,
+)
+
+
+def authenticate_user_use_case() -> AuthenticateUserUseCase:
+    return AuthenticateUserUseCase()
+
+
+def create_access_token_use_case() -> CreateAccessTokenUseCase:
+    return CreateAccessTokenUseCase()
 
 
 def get_user_by_username_use_case() -> GetUserByUsernameUseCase:

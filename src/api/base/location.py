@@ -20,10 +20,10 @@ from src.domain.location.use_cases.update_location import (
 )
 from src.schemas.location import LocationResponseSchema, LocationRequestSchema
 
-location_router = APIRouter()
+router = APIRouter()
 
 
-@location_router.get('/{id}')
+@router.get('/{id}', response_model=LocationResponseSchema)
 async def get_location(
     id: uuid.UUID,
     use_case: GetLocationUseCase = Depends(get_location_use_case),
@@ -36,7 +36,11 @@ async def get_location(
         )
 
 
-@location_router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post(
+    '/',
+    status_code=status.HTTP_201_CREATED,
+    response_model=LocationResponseSchema,
+)
 async def create_location(
     data: LocationRequestSchema,
     use_case: CreateLocationUseCase = Depends(create_location_use_case),
@@ -44,7 +48,7 @@ async def create_location(
     return await use_case.execute(data=data)
 
 
-@location_router.put('/{id}')
+@router.put('/{id}', response_model=LocationResponseSchema)
 async def update_location(
     id: uuid.UUID,
     data: LocationRequestSchema,
@@ -58,7 +62,7 @@ async def update_location(
         )
 
 
-@location_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_location(
     id: uuid.UUID,
     use_case: DeleteLocationUseCase = Depends(delete_location_use_case),

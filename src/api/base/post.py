@@ -24,11 +24,12 @@ from src.domain.post.use_cases.update_post import (
     UpdatePostUseCase,
 )
 from src.schemas.post import PostResponseSchema, PostRequestSchema
+from src.services.auth import AuthService
 
-post_router = APIRouter()
+router = APIRouter()
 
 
-@post_router.get('/{id}')
+@router.get('/{id}', response_model=PostResponseSchema)
 async def get_post(
     id: uuid.UUID,
     use_case: GetPostUseCase = Depends(get_post_use_case),
@@ -41,7 +42,12 @@ async def get_post(
         )
 
 
-@post_router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post(
+    '/',
+    status_code=status.HTTP_201_CREATED,
+    response_model=PostResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def create_post(
     data: PostRequestSchema,
     use_case: CreatePostUseCase = Depends(create_post_use_case),
@@ -58,7 +64,7 @@ async def create_post(
         )
 
 
-@post_router.put('/{id}')
+@router.put('/{id}', response_model=PostResponseSchema)
 async def update_post(
     id: uuid.UUID,
     data: PostRequestSchema,
@@ -80,7 +86,7 @@ async def update_post(
         )
 
 
-@post_router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(
     id: uuid.UUID,
     use_case: DeletePostUseCase = Depends(delete_post_use_case),
