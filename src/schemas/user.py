@@ -7,27 +7,34 @@ from pydantic import (
     field_validator,
 )
 from datetime import datetime
+from src.resources.field_description import (
+    USERNAME,
+    EMAIL,
+    FIRST_NAME,
+    LAST_NAME,
+    IS_ACTIVE,
+    IS_ADMIN,
+    PASSWORD,
+)
 
 
 class UserBaseSchema(BaseModel):
-    username: str = Field(max_length=64, description='Имя пользователя')
-    email: EmailStr = Field(description='Email')
+    username: str = Field(max_length=64, description=USERNAME)
+    email: EmailStr = Field(description=EMAIL)
 
     first_name: str | None = Field(
-        max_length=64, default=None, description='Имя'
+        max_length=64, default=None, description=FIRST_NAME
     )
     last_name: str | None = Field(
-        max_length=64, default=None, description='Фамилия'
+        max_length=64, default=None, description=LAST_NAME
     )
 
-    is_active: bool = Field(default=True, description='Является активным')
-    is_admin: bool = Field(
-        default=False, description='Является администратором'
-    )
+    is_active: bool = Field(default=True, description=IS_ACTIVE)
+    is_admin: bool = Field(default=False, description=IS_ADMIN)
 
 
 class UserRequestSchema(UserBaseSchema):
-    password: str = Field(min_length=8, description='Пароль')
+    password: str = Field(min_length=8, description=PASSWORD)
 
     @field_validator('password', mode='after')
     @staticmethod
