@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from src.api.auth import router as auth_router
-from src.api.base.user import router as user_router
-from src.api.base.category import router as category_router
-from src.api.base.location import router as location_router
-from src.api.base.post import router as post_router
-from src.api.base.comment import router as comment_router
+from src.api.user import router as user_router
+from src.api.category import router as category_router
+from src.api.location import router as location_router
+from src.api.post import router as post_router
+from src.api.comment import router as comment_router
 
 
 def create_app() -> FastAPI:
