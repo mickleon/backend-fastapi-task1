@@ -26,6 +26,7 @@ from src.domain.user.use_cases.update_user_by_username import (
 )
 from src.schemas.post import PostsPageResponseSchema
 from src.schemas.user import UserResponseSchema, UserRequestSchema
+from src.services.auth import AuthService
 
 router = APIRouter()
 
@@ -79,7 +80,11 @@ async def create_user(
         )
 
 
-@router.put('/{username}', response_model=UserResponseSchema)
+@router.put(
+    '/{username}',
+    response_model=UserResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def update_user_by_username(
     username: str,
     data: UserRequestSchema,
@@ -99,7 +104,11 @@ async def update_user_by_username(
         )
 
 
-@router.delete('/{username}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    '/{username}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def delete_user_by_username(
     username: str,
     use_case: DeleteUserByUsernameUseCase = Depends(

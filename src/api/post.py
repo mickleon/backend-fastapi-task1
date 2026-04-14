@@ -64,7 +64,11 @@ async def create_post(
         )
 
 
-@router.put('/{id}', response_model=PostResponseSchema)
+@router.put(
+    '/{id}',
+    response_model=PostResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def update_post(
     id: uuid.UUID,
     data: PostRequestSchema,
@@ -86,7 +90,11 @@ async def update_post(
         )
 
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    '/{id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def delete_post(
     id: uuid.UUID,
     use_case: DeletePostUseCase = Depends(delete_post_use_case),

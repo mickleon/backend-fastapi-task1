@@ -19,6 +19,7 @@ from src.domain.category.use_cases.update_category import (
     UpdateCategoryUseCase,
 )
 from src.schemas.category import CategoryResponseSchema, CategoryRequestSchema
+from src.services.auth import AuthService
 
 router = APIRouter()
 
@@ -40,6 +41,7 @@ async def get_category(
     '/',
     status_code=status.HTTP_201_CREATED,
     response_model=CategoryResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def create_category(
     data: CategoryRequestSchema,
@@ -48,7 +50,11 @@ async def create_category(
     return await use_case.execute(data=data)
 
 
-@router.put('/{id}', response_model=CategoryResponseSchema)
+@router.put(
+    '/{id}',
+    response_model=CategoryResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def update_category(
     id: uuid.UUID,
     data: CategoryRequestSchema,
@@ -62,7 +68,11 @@ async def update_category(
         )
 
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    '/{id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def delete_category(
     id: uuid.UUID,
     use_case: DeleteCategoryUseCase = Depends(delete_category_use_case),

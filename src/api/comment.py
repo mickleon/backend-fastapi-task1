@@ -22,6 +22,7 @@ from src.domain.comment.use_cases.update_comment import (
     UpdateCommentUseCase,
 )
 from src.schemas.comment import CommentResponseSchema, CommentRequestSchema
+from src.services.auth import AuthService
 
 router = APIRouter()
 
@@ -43,6 +44,7 @@ async def get_comment(
     '/',
     status_code=status.HTTP_201_CREATED,
     response_model=CommentResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def create_comment(
     data: CommentRequestSchema,
@@ -56,7 +58,11 @@ async def create_comment(
         )
 
 
-@router.put('/{id}', response_model=CommentResponseSchema)
+@router.put(
+    '/{id}',
+    response_model=CommentResponseSchema,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def update_comment(
     id: int,
     data: CommentRequestSchema,
@@ -74,7 +80,11 @@ async def update_comment(
         )
 
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    '/{id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)],
+)
 async def delete_comment(
     id: int,
     use_case: DeleteCommentUseCase = Depends(delete_comment_use_case),
