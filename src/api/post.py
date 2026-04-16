@@ -14,15 +14,9 @@ from src.core.exceptions.domain_exceptions import (
     UserNotFoundByIdException,
 )
 from src.domain.post.use_cases.create_post import CreatePostUseCase
-from src.domain.post.use_cases.delete_post import (
-    DeletePostUseCase,
-)
-from src.domain.post.use_cases.get_post import (
-    GetPostUseCase,
-)
-from src.domain.post.use_cases.update_post import (
-    UpdatePostUseCase,
-)
+from src.domain.post.use_cases.delete_post import DeletePostUseCase
+from src.domain.post.use_cases.get_post import GetPostUseCase
+from src.domain.post.use_cases.update_post import UpdatePostUseCase
 from src.schemas.post import PostResponseSchema, PostRequestSchema
 from src.services.auth import AuthService
 

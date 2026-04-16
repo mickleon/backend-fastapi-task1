@@ -15,14 +15,16 @@ from src.infrastructure.sqlite.repositories.user import UserRepository
 
 AUTH_EXCEPTION_MESSAGE = 'Невозможно проверить данные авторизации'
 SECRET_AUTH_KEY = SecretStr(
-    'aF75A92Cd9s10KGL4nLdt1r85XRtZ7APNO6NheGeKdRBhhc9oObQywxmqPF'
+    'qqZmvlTRAksPycvJ3e6Eolah99O8O35F3JpUPMyd8Tnewqjolsnw6HWi1VD'
 )
 AUTH_ALGORITHM = 'HS256'
 
 
 class AuthService:
     @staticmethod
-    async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    async def get_current_user(
+        token: Annotated[str, Depends(oauth2_scheme)],
+    ) -> UserResponseSchema:
         _database: Database = sqlite_database
         _repo: UserRepository = UserRepository()
 

@@ -9,15 +9,9 @@ from src.api.depends import (
 )
 from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException
 from src.domain.category.use_cases.create_category import CreateCategoryUseCase
-from src.domain.category.use_cases.delete_category import (
-    DeleteCategoryUseCase,
-)
-from src.domain.category.use_cases.get_category import (
-    GetCategoryUseCase,
-)
-from src.domain.category.use_cases.update_category import (
-    UpdateCategoryUseCase,
-)
+from src.domain.category.use_cases.delete_category import DeleteCategoryUseCase
+from src.domain.category.use_cases.get_category import GetCategoryUseCase
+from src.domain.category.use_cases.update_category import UpdateCategoryUseCase
 from src.schemas.category import CategoryResponseSchema, CategoryRequestSchema
 from src.services.auth import AuthService
 

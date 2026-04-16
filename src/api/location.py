@@ -9,15 +9,9 @@ from src.api.depends import (
 )
 from src.core.exceptions.domain_exceptions import LocationNotFoundByIdException
 from src.domain.location.use_cases.create_location import CreateLocationUseCase
-from src.domain.location.use_cases.delete_location import (
-    DeleteLocationUseCase,
-)
-from src.domain.location.use_cases.get_location import (
-    GetLocationUseCase,
-)
-from src.domain.location.use_cases.update_location import (
-    UpdateLocationUseCase,
-)
+from src.domain.location.use_cases.delete_location import DeleteLocationUseCase
+from src.domain.location.use_cases.get_location import GetLocationUseCase
+from src.domain.location.use_cases.update_location import UpdateLocationUseCase
 from src.schemas.location import LocationResponseSchema, LocationRequestSchema
 from src.services.auth import AuthService
 

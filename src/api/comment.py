@@ -12,15 +12,9 @@ from src.core.exceptions.domain_exceptions import (
     UserNotFoundByIdException,
 )
 from src.domain.comment.use_cases.create_comment import CreateCommentUseCase
-from src.domain.comment.use_cases.delete_comment import (
-    DeleteCommentUseCase,
-)
-from src.domain.comment.use_cases.get_comment import (
-    GetCommentUseCase,
-)
-from src.domain.comment.use_cases.update_comment import (
-    UpdateCommentUseCase,
-)
+from src.domain.comment.use_cases.delete_comment import DeleteCommentUseCase
+from src.domain.comment.use_cases.get_comment import GetCommentUseCase
+from src.domain.comment.use_cases.update_comment import UpdateCommentUseCase
 from src.schemas.comment import CommentResponseSchema, CommentRequestSchema
 from src.services.auth import AuthService
 
