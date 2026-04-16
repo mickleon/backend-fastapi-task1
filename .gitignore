@@ -79,6 +79,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*uv.lock
 
 # Папки, создаваемые средой разработки
 .idea
