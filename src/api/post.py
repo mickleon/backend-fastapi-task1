@@ -18,6 +18,7 @@ from src.domain.post.use_cases.delete_post import DeletePostUseCase
 from src.domain.post.use_cases.get_post import GetPostUseCase
 from src.domain.post.use_cases.update_post import UpdatePostUseCase
 from src.schemas.post import PostResponseSchema, PostRequestSchema
+from src.schemas.user import UserResponseSchema
 from src.services.auth import AuthService
 
 router = APIRouter()
@@ -27,9 +28,12 @@ router = APIRouter()
 async def get_post(
     id: uuid.UUID,
     use_case: GetPostUseCase = Depends(get_post_use_case),
+    current_user: UserResponseSchema | None = Depends(
+        AuthService.get_current_user_or_none
+    ),
 ) -> PostResponseSchema:
     try:
-        return await use_case.execute(id=id)
+        return await use_case.execute(id=id, current_user=current_user)
     except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
@@ -40,14 +44,14 @@ async def get_post(
     '/',
     status_code=status.HTTP_201_CREATED,
     response_model=PostResponseSchema,
-    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def create_post(
     data: PostRequestSchema,
     use_case: CreatePostUseCase = Depends(create_post_use_case),
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
 ) -> PostResponseSchema:
     try:
-        return await use_case.execute(data=data)
+        return await use_case.execute(data=data, current_user=current_user)
     except (
         UserNotFoundByIdException,
         LocationNotFoundByIdException,
@@ -61,15 +65,17 @@ async def create_post(
 @router.put(
     '/{id}',
     response_model=PostResponseSchema,
-    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def update_post(
     id: uuid.UUID,
     data: PostRequestSchema,
     use_case: UpdatePostUseCase = Depends(update_post_use_case),
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
 ) -> PostResponseSchema:
     try:
-        return await use_case.execute(id=id, data=data)
+        return await use_case.execute(
+            id=id, data=data, current_user=current_user
+        )
     except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
@@ -87,14 +93,14 @@ async def update_post(
 @router.delete(
     '/{id}',
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def delete_post(
     id: uuid.UUID,
     use_case: DeletePostUseCase = Depends(delete_post_use_case),
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
 ):
     try:
-        return await use_case.execute(id=id)
+        return await use_case.execute(id=id, current_user=current_user)
     except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()

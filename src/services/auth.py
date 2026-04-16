@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from src.core.exceptions.auth_exceptions import CredentialsException
 from src.core.exceptions.database_exceptions import UserNotFoundException
 from src.schemas.user import UserResponseSchema
-from src.resources.auth import oauth2_scheme
+from src.resources.auth import oauth2_scheme, optional_oauth2_scheme
 from src.infrastructure.sqlite.database import (
     database as sqlite_database,
     Database,
@@ -22,9 +22,7 @@ AUTH_ALGORITHM = 'HS256'
 
 class AuthService:
     @staticmethod
-    async def get_current_user(
-        token: Annotated[str, Depends(oauth2_scheme)],
-    ) -> UserResponseSchema:
+    async def _resolve_user_from_token(token: str) -> UserResponseSchema:
         _database: Database = sqlite_database
         _repo: UserRepository = UserRepository()
 
@@ -47,3 +45,21 @@ class AuthService:
             raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
 
         return UserResponseSchema.model_validate(obj=user)
+
+    @staticmethod
+    async def get_current_user(
+        token: Annotated[str, Depends(oauth2_scheme)],
+    ) -> UserResponseSchema:
+        return await AuthService._resolve_user_from_token(token=token)
+
+    @staticmethod
+    async def get_current_user_or_none(
+        token: Annotated[str | None, Depends(optional_oauth2_scheme)],
+    ) -> UserResponseSchema | None:
+        if token is None:
+            return None
+
+        try:
+            return await AuthService._resolve_user_from_token(token=token)
+        except CredentialsException:
+            return None

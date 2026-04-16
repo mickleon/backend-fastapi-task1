@@ -1,6 +1,7 @@
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.location import LocationRepository
 from src.schemas.location import LocationRequestSchema, LocationResponseSchema
+from src.schemas.user import UserResponseSchema
 
 
 class CreateLocationUseCase:
@@ -9,7 +10,7 @@ class CreateLocationUseCase:
         self._repo = LocationRepository()
 
     async def execute(
-        self, data: LocationRequestSchema
+        self, data: LocationRequestSchema, current_user: UserResponseSchema
     ) -> LocationResponseSchema:
         with self._database.session() as session:
             location = self._repo.create(session=session, data=data)

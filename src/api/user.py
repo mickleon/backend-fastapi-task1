@@ -37,9 +37,14 @@ async def get_user_by_username(
     use_case: GetUserByUsernameUseCase = Depends(
         get_user_by_username_use_case
     ),
+    current_user: UserResponseSchema | None = Depends(
+        AuthService.get_current_user_or_none
+    ),
 ) -> UserResponseSchema:
     try:
-        return await use_case.execute(username=username)
+        return await use_case.execute(
+            target_username=username, current_user=current_user
+        )
     except UserNotFoundByUsernameException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
@@ -54,10 +59,16 @@ async def get_user_posts_by_username(
     use_case: GetUserPostsByUsernameUseCase = Depends(
         get_user_posts_by_username_use_case
     ),
+    current_user: UserResponseSchema | None = Depends(
+        AuthService.get_current_user_or_none
+    ),
 ) -> PostsPageResponseSchema:
     try:
         return await use_case.execute(
-            username=username, page=page, page_size=page_size
+            target_username=username,
+            page=page,
+            page_size=page_size,
+            current_user=current_user,
         )
     except UserNotFoundByUsernameException as e:
         raise HTTPException(
@@ -71,9 +82,12 @@ async def get_user_posts_by_username(
 async def create_user(
     data: UserRequestSchema,
     use_case: CreateUserUseCase = Depends(create_user_use_case),
+    current_user: UserResponseSchema | None = Depends(
+        AuthService.get_current_user_or_none
+    ),
 ) -> UserResponseSchema:
     try:
-        return await use_case.execute(data=data)
+        return await use_case.execute(data=data, current_user=current_user)
     except UserUsernameOrEmailIsNotUniqueException as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=e.get_detail()
@@ -83,7 +97,6 @@ async def create_user(
 @router.put(
     '/{username}',
     response_model=UserResponseSchema,
-    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def update_user_by_username(
     username: str,
@@ -91,9 +104,12 @@ async def update_user_by_username(
     use_case: UpdateUserByUsernameUseCase = Depends(
         update_user_by_username_use_case
     ),
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
 ) -> UserResponseSchema:
     try:
-        return await use_case.execute(username=username, data=data)
+        return await use_case.execute(
+            target_username=username, data=data, current_user=current_user
+        )
     except UserNotFoundByUsernameException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
@@ -107,16 +123,18 @@ async def update_user_by_username(
 @router.delete(
     '/{username}',
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(AuthService.get_current_user)],
 )
 async def delete_user_by_username(
     username: str,
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
     use_case: DeleteUserByUsernameUseCase = Depends(
         delete_user_by_username_use_case
     ),
 ):
     try:
-        return await use_case.execute(username)
+        return await use_case.execute(
+            target_username=username, current_user=current_user
+        )
     except UserNotFoundByUsernameException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()

@@ -1,6 +1,7 @@
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.category import CategoryRepository
 from src.schemas.category import CategoryRequestSchema, CategoryResponseSchema
+from src.schemas.user import UserResponseSchema
 
 
 class CreateCategoryUseCase:
@@ -9,7 +10,7 @@ class CreateCategoryUseCase:
         self._repo = CategoryRepository()
 
     async def execute(
-        self, data: CategoryRequestSchema
+        self, data: CategoryRequestSchema, current_user: UserResponseSchema
     ) -> CategoryResponseSchema:
         with self._database.session() as session:
             category = self._repo.create(session=session, data=data)

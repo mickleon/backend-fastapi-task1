@@ -1,3 +1,5 @@
+import logging
+
 from src.core.exceptions.database_exceptions import UserNotFoundException
 from src.core.exceptions.domain_exceptions import (
     UserNotFoundByUsernameException,
@@ -5,6 +7,9 @@ from src.core.exceptions.domain_exceptions import (
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.user import UserRepository
 from src.schemas.post import PostResponseSchema, PostsPageResponseSchema
+from src.schemas.user import UserResponseSchema
+
+logger = logging.getLogger(__name__)
 
 
 class GetUserPostsByUsernameUseCase:
@@ -14,9 +19,10 @@ class GetUserPostsByUsernameUseCase:
 
     async def execute(
         self,
-        username: str,
+        target_username: str,
         page: int,
         page_size: int,
+        current_user: UserResponseSchema | None,
     ) -> PostsPageResponseSchema:
         page = max(page, 1)
         limit = max(min(page_size, 100), 1)
@@ -26,12 +32,23 @@ class GetUserPostsByUsernameUseCase:
             try:
                 posts = self._repo.get_posts(
                     session=session,
-                    username=username,
+                    username=target_username,
                     offset=offset,
                     limit=limit + 1,
                 )
             except UserNotFoundException:
-                raise UserNotFoundByUsernameException(username=username)
+                error = UserNotFoundByUsernameException(
+                    username=target_username
+                )
+                username = (
+                    current_user.username
+                    if current_user is not None
+                    else 'анонимный'
+                )
+                logger.error(
+                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                )
+                raise error
 
             has_next = len(posts) > limit
             if has_next:

@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from src.core.exceptions.database_exceptions import CategoryNotFoundException
@@ -5,6 +6,9 @@ from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.category import CategoryRepository
 from src.schemas.category import CategoryRequestSchema, CategoryResponseSchema
+from src.schemas.user import UserResponseSchema
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateCategoryUseCase:
@@ -13,12 +17,20 @@ class UpdateCategoryUseCase:
         self._repo = CategoryRepository()
 
     async def execute(
-        self, id: uuid.UUID, data: CategoryRequestSchema
+        self,
+        id: uuid.UUID,
+        data: CategoryRequestSchema,
+        current_user: UserResponseSchema,
     ) -> CategoryResponseSchema:
         with self._database.session() as session:
             try:
                 category = self._repo.update(session=session, id=id, data=data)
             except CategoryNotFoundException:
-                raise CategoryNotFoundByIdException(id=id)
+                error = CategoryNotFoundByIdException(id=id)
+                username = current_user.username
+                logger.error(
+                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                )
+                raise error
 
             return CategoryResponseSchema.model_validate(obj=category)
