@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 
-from src.services.auth import SECRET_AUTH_KEY, AUTH_ALGORITHM
+from src.core.config import settings
 
 
 class CreateAccessTokenUseCase:
@@ -22,8 +22,8 @@ class CreateAccessTokenUseCase:
         to_encode.update({'exp': expire})
         encoded_jwt = jwt.encode(
             claims=to_encode,
-            key=SECRET_AUTH_KEY.get_secret_value(),
-            algorithm=AUTH_ALGORITHM,
+            key=settings.SECRET_AUTH_KEY.get_secret_value(),
+            algorithm=settings.AUTH_ALGORITHM,
         )
 
         return encoded_jwt

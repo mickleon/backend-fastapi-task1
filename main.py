@@ -1,17 +1,17 @@
 import asyncio
 import uvicorn
 
-from src.infrastructure.sqlite.database import database
 from src.app import create_app
+from src.core.config import settings
 
 app = create_app()
 
 
-async def run() -> None:
+async def main() -> None:
     config = uvicorn.Config(
         'main:app',
         host='0.0.0.0',
-        port=8000,
+        port=settings.PORT,
     )
     server = uvicorn.Server(config=config)
     tasks = (asyncio.create_task(server.serve()),)
@@ -20,6 +20,5 @@ async def run() -> None:
 
 
 if __name__ == '__main__':
-    database.run_migraions()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    loop.run_until_complete(main())

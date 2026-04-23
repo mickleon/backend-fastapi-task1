@@ -1,6 +1,5 @@
 from typing import Annotated
 from fastapi import Depends
-from pydantic import SecretStr
 from jose import JWTError, jwt
 
 from src.core.exceptions.auth_exceptions import CredentialsException
@@ -12,37 +11,33 @@ from src.infrastructure.sqlite.database import (
     Database,
 )
 from src.infrastructure.sqlite.repositories.user import UserRepository
-
-AUTH_EXCEPTION_MESSAGE = 'Невозможно проверить данные авторизации'
-SECRET_AUTH_KEY = SecretStr(
-    'qqZmvlTRAksPycvJ3e6Eolah99O8O35F3JpUPMyd8Tnewqjolsnw6HWi1VD'
-)
-AUTH_ALGORITHM = 'HS256'
+from src.core.config import settings
 
 
 class AuthService:
     @staticmethod
     async def _resolve_user_from_token(token: str) -> UserResponseSchema:
+        _AUTH_EXCEPTION_MESSAGE = 'Невозможно проверить данные авторизации'
         _database: Database = sqlite_database
         _repo: UserRepository = UserRepository()
 
         try:
             payload = jwt.decode(
                 token=token,
-                key=SECRET_AUTH_KEY.get_secret_value(),
-                algorithms=[AUTH_ALGORITHM],
+                key=settings.SECRET_AUTH_KEY.get_secret_value(),
+                algorithms=[settings.AUTH_ALGORITHM],
             )
             username = payload.get('sub')
             if username is None:
-                raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
+                raise CredentialsException(detail=_AUTH_EXCEPTION_MESSAGE)
         except JWTError:
-            raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
+            raise CredentialsException(detail=_AUTH_EXCEPTION_MESSAGE)
 
         try:
             with _database.session() as session:
                 user = _repo.get(session=session, username=username)
         except UserNotFoundException:
-            raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
+            raise CredentialsException(detail=_AUTH_EXCEPTION_MESSAGE)
 
         return UserResponseSchema.model_validate(obj=user)
 

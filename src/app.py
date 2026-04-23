@@ -7,13 +7,18 @@ from src.api.category import router as category_router
 from src.api.location import router as location_router
 from src.api.post import router as post_router
 from src.api.comment import router as comment_router
+from src.core.config import settings
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(root_path='/api/v1')
+    app = FastAPI(root_path=settings.ROOT_PATH)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*'],
+        allow_origins=[
+            host.strip()
+            for host in settings.ORIGINS.split(',')
+            if host.strip()
+        ],
         allow_credentials=True,
         allow_methods=['*'],
         allow_headers=['*'],

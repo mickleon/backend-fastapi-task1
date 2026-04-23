@@ -1,0 +1,13 @@
+services:
+  app:
+    image: backend-fastapi-blogicum
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8020:8000"
+    build:
+      context: .
+    pull_policy: build
+    entrypoint: ./entrypoint.sh
