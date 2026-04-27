@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.13.13-alpine
 
 ENV PATH="${PATH}:/root/.local/bin"
 COPY ./src /app/src
