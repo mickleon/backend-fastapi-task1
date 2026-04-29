@@ -78,7 +78,7 @@ class UserRepository:
         )
         user = await session.scalar(query)
 
-        return user
+        return user  # pyright: ignore[reportReturnType]
 
     async def update(
         self, session: AsyncSession, username: str, data: UserRequestSchema
@@ -118,7 +118,7 @@ class UserRepository:
         )
         user = await session.scalar(query)
 
-        return user
+        return user  # pyright: ignore[reportReturnType]
 
     async def delete(self, session: AsyncSession, username: str) -> None:
         query = delete(self._model).where(self._model.username == username)

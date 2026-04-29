@@ -68,7 +68,7 @@ class PostRepository:
         )
         post = await session.scalar(query)
 
-        return post
+        return post  # pyright: ignore[reportReturnType]
 
     async def update(
         self, session: AsyncSession, id: uuid.UUID, data: PostRequestSchema
@@ -119,7 +119,7 @@ class PostRepository:
         )
         post = await session.scalar(query)
 
-        return post
+        return post  # pyright: ignore[reportReturnType]
 
     async def delete(self, session: AsyncSession, id: uuid.UUID) -> None:
         query = delete(self._model).where(self._model.id == id)

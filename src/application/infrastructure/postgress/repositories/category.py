@@ -35,7 +35,7 @@ class CategoryRepository:
         )
         category = await session.scalar(query)
 
-        return category
+        return category  # pyright: ignore[reportReturnType]
 
     async def update(
         self, session: AsyncSession, id: uuid.UUID, data: CategoryRequestSchema

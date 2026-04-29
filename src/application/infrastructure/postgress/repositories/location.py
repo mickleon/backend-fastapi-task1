@@ -35,7 +35,7 @@ class LocationRepository:
         )
         location = await session.scalar(query)
 
-        return location
+        return location  # pyright: ignore[reportReturnType]
 
     async def update(
         self, session: AsyncSession, id: uuid.UUID, data: LocationRequestSchema

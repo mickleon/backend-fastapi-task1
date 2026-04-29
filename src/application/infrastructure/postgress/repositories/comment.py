@@ -48,7 +48,7 @@ class CommentRepository:
         )
         comment = await session.scalar(query)
 
-        return comment
+        return comment  # pyright: ignore[reportReturnType]
 
     async def update(
         self, session: AsyncSession, id: int, data: CommentRequestSchema
@@ -85,7 +85,7 @@ class CommentRepository:
         )
         comment = await session.scalar(query)
 
-        return comment
+        return comment  # pyright: ignore[reportReturnType]
 
     async def delete(self, session: AsyncSession, id: int) -> None:
         query = delete(self._model).where(self._model.id == id)
