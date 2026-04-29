@@ -1,25 +1,26 @@
-from logging.config import fileConfig
+import asyncio
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from alembic import context
 
-from src.infrastructure.sqlite.database import Base
-from src.infrastructure.sqlite.models.user import *
-from src.infrastructure.sqlite.models.post import *
-from src.infrastructure.sqlite.models.location import *
-from src.infrastructure.sqlite.models.category import *
-from src.infrastructure.sqlite.models.comment import *
+from src.application.core.config import settings
+from src.application.infrastructure.postgress.database import Base
+from src.application.infrastructure.postgress.models.user import *  # noqa
+from src.application.infrastructure.postgress.models.post import *  # noqa
+from src.application.infrastructure.postgress.models.location import *  # noqa
+from src.application.infrastructure.postgress.models.category import *  # noqa
+from src.application.infrastructure.postgress.models.comment import *  # noqa
+
+
+CREATE_SCHEMA_QUERY = (
+    f'CREATE SCHEMA IF NOT EXISTS {settings.POSTGRES_SCHEMA};'
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -31,6 +32,12 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+config.set_main_option('sqlalchemy.url', settings.postgres_url)
+
+
+def filter_foreign_schemas(name, type_, parent_names):
+    return type_ != 'schema' or name == settings.POSTGRES_SCHEMA
 
 
 def run_migrations_offline() -> None:
@@ -57,31 +64,41 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
+def do_run_migrations(connection):
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        version_table_schema=settings.POSTGRES_SCHEMA,
+        include_schemas=True,
+        include_name=filter_foreign_schemas,
+    )
+
+    with context.begin_transaction():
+        context.execute(CREATE_SCHEMA_QUERY)
+        context.run_migrations()
+
+
+async def run_migrations_online(engine: AsyncEngine) -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix='sqlalchemy.',
-        poolclass=pool.NullPool,
-    )
-
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            render_as_batch=True,  # для SQLite
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
+    async with engine.connect() as connection:
+        await connection.run_sync(do_run_migrations)
 
 
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    connectable = AsyncEngine(
+        engine_from_config(
+            config.get_section(config.config_ini_section),
+            prefix='sqlalchemy.',
+            poolclass=pool.NullPool,
+            future=True,
+        ),
+    )
+
+    asyncio.run(run_migrations_online(connectable))

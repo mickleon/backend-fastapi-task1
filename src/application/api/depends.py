@@ -1,0 +1,151 @@
+from application.domain.category.use_cases.create_category import (
+    CreateCategoryUseCase,
+)
+from application.domain.category.use_cases.delete_category import (
+    DeleteCategoryUseCase,
+)
+from application.domain.category.use_cases.get_category import (
+    GetCategoryUseCase,
+)
+from application.domain.category.use_cases.update_category import (
+    UpdateCategoryUseCase,
+)
+from application.domain.comment.use_cases.create_comment import (
+    CreateCommentUseCase,
+)
+from application.domain.comment.use_cases.delete_comment import (
+    DeleteCommentUseCase,
+)
+from application.domain.comment.use_cases.get_comment import (
+    GetCommentUseCase,
+)
+from application.domain.comment.use_cases.update_comment import (
+    UpdateCommentUseCase,
+)
+from application.domain.location.use_cases.create_location import (
+    CreateLocationUseCase,
+)
+from application.domain.location.use_cases.delete_location import (
+    DeleteLocationUseCase,
+)
+from application.domain.location.use_cases.get_location import (
+    GetLocationUseCase,
+)
+from application.domain.location.use_cases.update_location import (
+    UpdateLocationUseCase,
+)
+from application.domain.post.use_cases.create_post import CreatePostUseCase
+from application.domain.post.use_cases.delete_post import DeletePostUseCase
+from application.domain.post.use_cases.get_post import GetPostUseCase
+from application.domain.post.use_cases.update_post import UpdatePostUseCase
+from application.domain.user.use_cases.create_user import CreateUserUseCase
+from application.domain.user.use_cases.delete_user_by_username import (
+    DeleteUserByUsernameUseCase,
+)
+from application.domain.user.use_cases.get_user_by_username import (
+    GetUserByUsernameUseCase,
+)
+from application.domain.user.use_cases.get_user_posts_by_username import (
+    GetUserPostsByUsernameUseCase,
+)
+from application.domain.user.use_cases.update_user_by_username import (
+    UpdateUserByUsernameUseCase,
+)
+from application.domain.auth.use_cases.authenticate_user import (
+    AuthenticateUserUseCase,
+)
+from application.domain.auth.use_cases.create_access_token import (
+    CreateAccessTokenUseCase,
+)
+
+
+def authenticate_user_use_case() -> AuthenticateUserUseCase:
+    return AuthenticateUserUseCase()
+
+
+def create_access_token_use_case() -> CreateAccessTokenUseCase:
+    return CreateAccessTokenUseCase()
+
+
+def get_user_by_username_use_case() -> GetUserByUsernameUseCase:
+    return GetUserByUsernameUseCase()
+
+
+def get_user_posts_by_username_use_case() -> GetUserPostsByUsernameUseCase:
+    return GetUserPostsByUsernameUseCase()
+
+
+def create_user_use_case() -> CreateUserUseCase:
+    return CreateUserUseCase()
+
+
+def update_user_by_username_use_case() -> UpdateUserByUsernameUseCase:
+    return UpdateUserByUsernameUseCase()
+
+
+def delete_user_by_username_use_case() -> DeleteUserByUsernameUseCase:
+    return DeleteUserByUsernameUseCase()
+
+
+def get_post_use_case() -> GetPostUseCase:
+    return GetPostUseCase()
+
+
+def create_post_use_case() -> CreatePostUseCase:
+    return CreatePostUseCase()
+
+
+def update_post_use_case() -> UpdatePostUseCase:
+    return UpdatePostUseCase()
+
+
+def delete_post_use_case() -> DeletePostUseCase:
+    return DeletePostUseCase()
+
+
+def get_comment_use_case() -> GetCommentUseCase:
+    return GetCommentUseCase()
+
+
+def create_comment_use_case() -> CreateCommentUseCase:
+    return CreateCommentUseCase()
+
+
+def update_comment_use_case() -> UpdateCommentUseCase:
+    return UpdateCommentUseCase()
+
+
+def delete_comment_use_case() -> DeleteCommentUseCase:
+    return DeleteCommentUseCase()
+
+
+def get_category_use_case() -> GetCategoryUseCase:
+    return GetCategoryUseCase()
+
+
+def create_category_use_case() -> CreateCategoryUseCase:
+    return CreateCategoryUseCase()
+
+
+def update_category_use_case() -> UpdateCategoryUseCase:
+    return UpdateCategoryUseCase()
+
+
+def delete_category_use_case() -> DeleteCategoryUseCase:
+    return DeleteCategoryUseCase()
+
+
+def get_location_use_case() -> GetLocationUseCase:
+    return GetLocationUseCase()
+
+
+def create_location_use_case() -> CreateLocationUseCase:
+    return CreateLocationUseCase()
+
+
+def update_location_use_case() -> UpdateLocationUseCase:
+    return UpdateLocationUseCase()
+
+
+def delete_location_use_case() -> DeleteLocationUseCase:
+    return DeleteLocationUseCase()
