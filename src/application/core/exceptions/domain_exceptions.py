@@ -97,8 +97,8 @@ class CommentNotFoundByIdException(BaseDomainException):
         super().__init__(detail=self._exception_text_template)
 
 
-class WrongPasswordException(BaseDomainException):
-    _exception_text = 'Неверный пароль'
+class WrongUsernameOrPasswordException(BaseDomainException):
+    _exception_text = 'Неверные имя пользователя или пароль'
 
     def __init__(self) -> None:
         super().__init__(detail=self._exception_text)

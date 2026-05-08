@@ -10,8 +10,7 @@ from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    UserNotFoundByUsernameException,
-    WrongPasswordException,
+    WrongUsernameOrPasswordException,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,14 +30,14 @@ class AuthenticateUserUseCase:
             async with self._database.session() as session:
                 user = await self._repo.get(session=session, username=username)
         except UserNotFoundException:
-            error = UserNotFoundByUsernameException(username=username)
+            error = WrongUsernameOrPasswordException()
             logger.error(error.get_detail())
             raise error
 
         if not verify_password(
             plain_password=password, hashed_password=user.password
         ):
-            error = WrongPasswordException()
+            error = WrongUsernameOrPasswordException()
             logger.error(error.get_detail())
             raise error
 
