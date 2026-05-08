@@ -11,8 +11,7 @@ from application.domain.auth.use_cases.create_access_token import (
     CreateAccessTokenUseCase,
 )
 from application.core.exceptions.domain_exceptions import (
-    WrongPasswordException,
-    UserNotFoundByUsernameException,
+    WrongUsernameOrPasswordException,
 )
 from application.api.depends import (
     create_access_token_use_case,
@@ -36,15 +35,11 @@ async def login_for_access_token(
         user = await auth_use_case.execute(
             username=form_data.username, password=form_data.password
         )
-    except WrongPasswordException as exc:
+    except WrongUsernameOrPasswordException as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=exc.get_detail(),
             headers={'WWW-Authenticate': 'Bearer'},
-        )
-    except UserNotFoundByUsernameException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
 
     access_token = await create_token_use_case.execute(username=user.username)
