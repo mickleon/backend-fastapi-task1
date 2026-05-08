@@ -1,6 +1,8 @@
+import uuid
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from application.resources.field_description import (
+    CATEGORY_ID,
     TITLE,
     DESCRIPTION,
     IS_PUBLISHED,
@@ -20,6 +22,7 @@ class CategoryRequestSchema(CategoryBaseSchema):
 
 
 class CategoryResponseSchema(CategoryBaseSchema):
+    id: uuid.UUID = Field(description=CATEGORY_ID)
     created_at: datetime = Field(description=CREATED_AT)
 
     model_config = ConfigDict(from_attributes=True)

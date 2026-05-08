@@ -1,9 +1,11 @@
+import uuid
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 from application.resources.field_description import (
     CREATED_AT,
     IS_PUBLISHED,
+    LOCATION_ID,
     LOCATION_NAME,
 )
 
@@ -18,6 +20,7 @@ class LocationRequestSchema(LocationBaseSchema):
 
 
 class LocationResponseSchema(LocationBaseSchema):
+    id: uuid.UUID = Field(description=LOCATION_ID)
     created_at: datetime = Field(description=CREATED_AT)
 
     model_config = ConfigDict(from_attributes=True)
