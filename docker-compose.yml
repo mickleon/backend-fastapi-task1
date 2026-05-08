@@ -35,7 +35,8 @@ services:
     networks:
       - app_network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 networks:
   app_network:
