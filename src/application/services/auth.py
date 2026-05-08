@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 from fastapi import Depends
 from jose import JWTError, jwt
@@ -21,6 +22,8 @@ from application.infrastructure.postgress.repositories.user import (
     UserRepository,
 )
 from application.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:
