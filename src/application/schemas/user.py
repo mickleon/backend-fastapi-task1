@@ -8,6 +8,7 @@ from pydantic import (
 )
 from datetime import datetime
 from application.resources.field_description import (
+    USER_ID,
     USERNAME,
     EMAIL,
     FIRST_NAME,
@@ -53,6 +54,7 @@ class UserRequestSchema(UserBaseSchema):
 
 
 class UserResponseSchema(UserBaseSchema):
+    id: int = Field(description=USER_ID)
     created_at: datetime = Field(description='Дата регистрации')
 
     model_config = ConfigDict(from_attributes=True)

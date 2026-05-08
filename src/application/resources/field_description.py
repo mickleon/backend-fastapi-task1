@@ -8,6 +8,7 @@ POST_ID: Final[str] = 'ID публикации'
 AUTHOR_ID: Final[str] = 'ID автора'
 HAS_NEXT: Final[str] = 'Есть ли следующая страница'
 
+USER_ID: Final[str] = 'ID пользователя'
 USERNAME: Final[str] = 'Имя пользователя'
 EMAIL: Final[str] = 'Email'
 FIRST_NAME: Final[str] = 'Имя'
