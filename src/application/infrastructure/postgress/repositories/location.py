@@ -10,12 +10,14 @@ from application.core.exceptions.database_exceptions import (
 from application.infrastructure.postgress.models.location import (
     Location as LocationModel,
 )
+from application.infrastructure.postgress.models.post import Post as PostModel
 from application.schemas.location import LocationRequestSchema
 
 
 class LocationRepository:
     def __init__(self) -> None:
         self._model: Type[LocationModel] = LocationModel
+        self._post_model: Type[PostModel] = PostModel
 
     async def get(self, session: AsyncSession, id: uuid.UUID) -> LocationModel:
         query = select(self._model).where(self._model.id == id)
@@ -25,6 +27,29 @@ class LocationRepository:
             raise LocationNotFoundException()
 
         return location
+
+    async def get_posts(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        offset: int,
+        limit: int,
+    ) -> list[PostModel]:
+        query = select(self._model).where(self._model.id == id)
+        location = await session.scalar(query)
+
+        if not location:
+            raise LocationNotFoundException()
+
+        query = (
+            select(self._post_model)
+            .where(self._post_model.location_id == id)
+            .order_by(self._post_model.pub_date.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        posts = (await session.scalars(query)).all()
+        return list(posts)
 
     async def create(
         self, session: AsyncSession, data: LocationRequestSchema

@@ -26,6 +26,7 @@ LOCATION_ID: Final[str] = 'ID местоположения'
 CATEGORY_ID: Final[str] = 'ID категории'
 IMAGE_URL: Final[str] = 'URL прикрепленного изображения'
 POST_LIST_ITEMS: Final[str] = 'Список публикаций'
+COMMENTS_LIST_ITEMS: Final[str] = 'Список комментариев'
 
 ACCESS_TOKEN: Final[str] = 'Токен для доступа к системе'
 TOKEN_TYPE: Final[str] = 'Тип токена для доступа к системе'

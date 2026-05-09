@@ -1,6 +1,7 @@
 import uuid
 from typing import Type, cast
-from sqlalchemy import CursorResult, insert, select, delete, update
+
+from sqlalchemy import CursorResult, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.core.exceptions.database_exceptions import (
@@ -8,17 +9,20 @@ from application.core.exceptions.database_exceptions import (
     LocationNotFoundException,
     PostNotFoundException,
 )
+from application.infrastructure.postgress.models.category import (
+    Category as CategoryModel,
+)
+from application.infrastructure.postgress.models.comment import (
+    Comment as CommentModel,
+)
+from application.infrastructure.postgress.models.location import (
+    Location as LocationModel,
+)
 from application.infrastructure.postgress.models.post import (
     Post as PostModel,
 )
 from application.infrastructure.postgress.models.user import (
     User as UserModel,
-)
-from application.infrastructure.postgress.models.location import (
-    Location as LocationModel,
-)
-from application.infrastructure.postgress.models.category import (
-    Category as CategoryModel,
 )
 from application.schemas.post import PostRequestSchema
 
@@ -29,6 +33,7 @@ class PostRepository:
         self._author_model: Type[UserModel] = UserModel
         self._location_model: Type[LocationModel] = LocationModel
         self._category_model: Type[CategoryModel] = CategoryModel
+        self._comments_model: Type[CommentModel] = CommentModel
 
     async def get(self, session: AsyncSession, id: uuid.UUID) -> PostModel:
         query = select(self._model).where(self._model.id == id)
@@ -38,6 +43,29 @@ class PostRepository:
             raise PostNotFoundException()
 
         return post
+
+    async def get_comments(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        offset: int,
+        limit: int,
+    ) -> list[CommentModel]:
+        query = select(self._model).where(self._model.id == id)
+        post = await session.scalar(query)
+
+        if not post:
+            raise PostNotFoundException()
+
+        query = (
+            select(self._comments_model)
+            .where(self._comments_model.post_id == id)
+            .order_by(self._comments_model.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        comments = (await session.scalars(query)).all()
+        return list(comments)
 
     async def create(
         self, session: AsyncSession, data: PostRequestSchema, author_id: int

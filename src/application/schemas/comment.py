@@ -5,7 +5,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from application.resources.field_description import (
     AUTHOR_ID,
+    COMMENTS_LIST_ITEMS,
     CREATED_AT,
+    HAS_NEXT,
     POST_ID,
     TEXT,
 )
@@ -25,3 +27,10 @@ class CommentResponseSchema(CommentBaseSchema):
     created_at: datetime = Field(description=CREATED_AT)
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CommentsPageResponseSchema(BaseModel):
+    items: list[CommentResponseSchema] = Field(
+        default_factory=list, description=COMMENTS_LIST_ITEMS
+    )
+    has_next: bool = Field(description=HAS_NEXT)

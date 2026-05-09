@@ -10,12 +10,14 @@ from application.core.exceptions.database_exceptions import (
 from application.infrastructure.postgress.models.category import (
     Category as CategoryModel,
 )
+from application.infrastructure.postgress.models.post import Post as PostModel
 from application.schemas.category import CategoryRequestSchema
 
 
 class CategoryRepository:
     def __init__(self) -> None:
         self._model: Type[CategoryModel] = CategoryModel
+        self._post_model: Type[PostModel] = PostModel
 
     async def get(self, session: AsyncSession, id: uuid.UUID) -> CategoryModel:
         query = select(self._model).where(self._model.id == id)
@@ -25,6 +27,29 @@ class CategoryRepository:
             raise CategoryNotFoundException()
 
         return category
+
+    async def get_posts(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        offset: int,
+        limit: int,
+    ) -> list[PostModel]:
+        query = select(self._model).where(self._model.id == id)
+        category = await session.scalar(query)
+
+        if not category:
+            raise CategoryNotFoundException()
+
+        query = (
+            select(self._post_model)
+            .where(self._post_model.category_id == id)
+            .order_by(self._post_model.pub_date.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        posts = (await session.scalars(query)).all()
+        return list(posts)
 
     async def create(
         self, session: AsyncSession, data: CategoryRequestSchema

@@ -47,7 +47,7 @@ class UserRepository:
         query = (
             select(self._post_model)
             .where(self._post_model.author_id == user.id)
-            .order_by(self._post_model.created_at.desc())
+            .order_by(self._post_model.pub_date.desc())
             .offset(offset)
             .limit(limit)
         )

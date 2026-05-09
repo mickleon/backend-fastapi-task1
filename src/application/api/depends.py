@@ -13,6 +13,9 @@ from application.domain.category.use_cases.delete_category import (
 from application.domain.category.use_cases.get_category import (
     GetCategoryUseCase,
 )
+from application.domain.category.use_cases.get_category_posts import (
+    GetCategoryPostsUseCase,
+)
 from application.domain.category.use_cases.update_category import (
     UpdateCategoryUseCase,
 )
@@ -37,12 +40,18 @@ from application.domain.location.use_cases.delete_location import (
 from application.domain.location.use_cases.get_location import (
     GetLocationUseCase,
 )
+from application.domain.location.use_cases.get_location_posts import (
+    GetLocationPostsUseCase,
+)
 from application.domain.location.use_cases.update_location import (
     UpdateLocationUseCase,
 )
 from application.domain.post.use_cases.create_post import CreatePostUseCase
 from application.domain.post.use_cases.delete_post import DeletePostUseCase
 from application.domain.post.use_cases.get_post import GetPostUseCase
+from application.domain.post.use_cases.get_post_comments import (
+    GetPostCommentsUseCase,
+)
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
 from application.domain.user.use_cases.create_user import CreateUserUseCase
 from application.domain.user.use_cases.delete_user_by_username import (
@@ -91,6 +100,10 @@ def get_post_use_case() -> GetPostUseCase:
     return GetPostUseCase()
 
 
+def get_post_comments_use_case() -> GetPostCommentsUseCase:
+    return GetPostCommentsUseCase()
+
+
 def create_post_use_case() -> CreatePostUseCase:
     return CreatePostUseCase()
 
@@ -123,6 +136,10 @@ def get_category_use_case() -> GetCategoryUseCase:
     return GetCategoryUseCase()
 
 
+def get_category_posts_use_case() -> GetCategoryPostsUseCase:
+    return GetCategoryPostsUseCase()
+
+
 def create_category_use_case() -> CreateCategoryUseCase:
     return CreateCategoryUseCase()
 
@@ -137,6 +154,10 @@ def delete_category_use_case() -> DeleteCategoryUseCase:
 
 def get_location_use_case() -> GetLocationUseCase:
     return GetLocationUseCase()
+
+
+def get_location_posts_use_case() -> GetLocationPostsUseCase:
+    return GetLocationPostsUseCase()
 
 
 def create_location_use_case() -> CreateLocationUseCase:
