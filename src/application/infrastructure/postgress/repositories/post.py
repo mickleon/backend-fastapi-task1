@@ -41,29 +41,21 @@ class PostRepository:
         return post
 
     async def create(
-        self, session: AsyncSession, data: PostRequestSchema
+        self, session: AsyncSession, data: PostRequestSchema, author_id: int
     ) -> PostModel:
-        author = await session.get(self._author_model, data.author_id)
-        if not author:
-            raise UserNotFoundException()
-
         if data.location_id is not None:
-            location = await session.get(
-                self._location_model, data.location_id
-            )
+            location = await session.get(self._location_model, data.location_id)
             if not location:
                 raise LocationNotFoundException()
 
         if data.category_id is not None:
-            category = await session.get(
-                self._category_model, data.category_id
-            )
+            category = await session.get(self._category_model, data.category_id)
             if not category:
                 raise CategoryNotFoundException()
 
         query = (
             insert(self._model)
-            .values(data.model_dump(exclude_none=True))
+            .values(**data.model_dump(exclude_none=True), author_id=author_id)
             .returning(self._model)
         )
         post = await session.scalar(query)
@@ -71,23 +63,16 @@ class PostRepository:
         return post  # pyright: ignore[reportReturnType]
 
     async def update(
-        self, session: AsyncSession, id: uuid.UUID, data: PostRequestSchema
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        data: PostRequestSchema,
     ) -> PostModel:
         post = await session.get(self._model, id)
         if not post:
             raise PostNotFoundException()
 
         update_data = data.model_dump(exclude_unset=True)
-
-        if (
-            'author_id' in update_data
-            and update_data['author_id'] != post.author_id
-        ):
-            author = await session.get(
-                self._author_model, update_data['author_id']
-            )
-            if not author:
-                raise UserNotFoundException()
 
         if (
             'location_id' in update_data

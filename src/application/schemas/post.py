@@ -26,13 +26,8 @@ class PostBaseSchema(BaseModel):
         description=PUB_DATE,
     )
 
-    author_id: int = Field(description=AUTHOR_ID)
-    location_id: uuid.UUID | None = Field(
-        default=None, description=LOCATION_ID
-    )
-    category_id: uuid.UUID | None = Field(
-        default=None, description=CATEGORY_ID
-    )
+    location_id: uuid.UUID | None = Field(default=None, description=LOCATION_ID)
+    category_id: uuid.UUID | None = Field(default=None, description=CATEGORY_ID)
     image_url: AnyUrl | None = Field(default=None, description=IMAGE_URL)
 
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
@@ -44,6 +39,7 @@ class PostRequestSchema(PostBaseSchema):
 
 class PostResponseSchema(PostBaseSchema):
     id: uuid.UUID = Field(description=POST_ID)
+    author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
 
     model_config = ConfigDict(from_attributes=True)

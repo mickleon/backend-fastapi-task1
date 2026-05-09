@@ -61,7 +61,7 @@ async def create_comment(
 ) -> CommentResponseSchema:
     try:
         return await use_case.execute(data=data, current_user=current_user)
-    except (UserNotFoundByIdException, PostNotFoundByIdException) as e:
+    except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
@@ -85,7 +85,7 @@ async def update_comment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-    except (UserNotFoundByIdException, PostNotFoundByIdException) as e:
+    except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )

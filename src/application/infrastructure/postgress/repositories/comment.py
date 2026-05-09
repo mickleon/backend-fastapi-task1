@@ -31,19 +31,15 @@ class CommentRepository:
         return comment
 
     async def create(
-        self, session: AsyncSession, data: CommentRequestSchema
+        self, session: AsyncSession, data: CommentRequestSchema, author_id: int
     ) -> CommentModel:
-        author = await session.get(self._author_model, data.author_id)
-        if not author:
-            raise UserNotFoundException()
-
         post = await session.get(self._post_model, data.post_id)
         if not post:
             raise PostNotFoundException()
 
         query = (
             insert(self._model)
-            .values(data.model_dump(exclude_none=True))
+            .values(**data.model_dump(exclude_none=True), author_id=author_id)
             .returning(self._model)
         )
         comment = await session.scalar(query)
@@ -60,16 +56,6 @@ class CommentRepository:
         update_data = data.model_dump(exclude_unset=True)
 
         if (
-            'author_id' in update_data
-            and update_data['author_id'] != comment.author_id
-        ):
-            author = await session.get(
-                self._author_model, update_data['author_id']
-            )
-            if not author:
-                raise UserNotFoundException()
-
-        if (
             'post_id' in update_data
             and update_data['post_id'] != comment.post_id
         ):
@@ -80,7 +66,7 @@ class CommentRepository:
         query = (
             update(self._model)
             .where(self._model.id == id)
-            .values(data.model_dump(exclude_unset=True))
+            .values(**update_data)
             .returning(self._model)
         )
         comment = await session.scalar(query)

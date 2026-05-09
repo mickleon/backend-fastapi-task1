@@ -33,16 +33,11 @@ class CreateCommentUseCase:
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.create(session=session, data=data)
+                comment = await self._repo.create(
+                    session=session, data=data, author_id=current_user.id
+                )
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=data.post_id)
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
-                )
-                raise error
-            except UserNotFoundException:
-                error = UserNotFoundByIdException(id=data.author_id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

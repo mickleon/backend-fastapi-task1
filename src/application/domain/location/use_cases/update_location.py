@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     LocationNotFoundException,
 )
@@ -31,6 +32,12 @@ class UpdateLocationUseCase:
         data: LocationRequestSchema,
         current_user: UserResponseSchema,
     ) -> LocationResponseSchema:
+        if not current_user.is_admin:
+            error = AccessDeniedException()
+            logger.error(
+                f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать местоположение с id {id}'
+            )
+            raise error
         async with self._database.session() as session:
             try:
                 location = await self._repo.update(

@@ -53,7 +53,6 @@ async def create_post(
     try:
         return await use_case.execute(data=data, current_user=current_user)
     except (
-        UserNotFoundByIdException,
         LocationNotFoundByIdException,
         CategoryNotFoundByIdException,
     ) as e:
@@ -81,7 +80,6 @@ async def update_post(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
     except (
-        UserNotFoundByIdException,
         LocationNotFoundByIdException,
         CategoryNotFoundByIdException,
     ) as e:

@@ -10,3 +10,15 @@ class CredentialsException(HTTPException):
             detail=detail,
             headers={'WWW-Authenticate': 'Bearer'},
         )
+
+
+class AccessDeniedException(HTTPException):
+    _detail = 'Недостаточно прав'
+
+    def __init__(self) -> None:
+        self.detail = self._detail
+
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=self.detail,
+        )

@@ -1,5 +1,6 @@
 import logging
 
+from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
     PostNotFoundException,
@@ -36,9 +37,20 @@ class UpdateCommentUseCase:
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.update(
-                    session=session, id=id, data=data
-                )
+                comment = await self._repo.get(session=session, id=id)
+                if (
+                    comment.author_id == current_user.id
+                    or current_user.is_admin
+                ):
+                    comment = await self._repo.update(
+                        session=session, id=id, data=data
+                    )
+                else:
+                    error = AccessDeniedException()
+                    logger.error(
+                        f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать комментарий с id {comment.id}'
+                    )
+                    raise error
             except CommentNotFoundException:
                 error = CommentNotFoundByIdException(id=id)
                 username = current_user.username
@@ -48,13 +60,6 @@ class UpdateCommentUseCase:
                 raise error
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=data.post_id)
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
-                )
-                raise error
-            except UserNotFoundException:
-                error = UserNotFoundByIdException(id=data.author_id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

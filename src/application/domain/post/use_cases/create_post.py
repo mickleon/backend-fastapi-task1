@@ -32,14 +32,9 @@ class CreatePostUseCase:
     ) -> PostResponseSchema:
         async with self._database.session() as session:
             try:
-                post = await self._repo.create(session=session, data=data)
-            except UserNotFoundException:
-                error = UserNotFoundByIdException(id=data.author_id)
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                post = await self._repo.create(
+                    session=session, data=data, author_id=current_user.id
                 )
-                raise error
             except CategoryNotFoundException:
                 error = CategoryNotFoundByIdException(id=data.category_id)  # pyright: ignore[reportArgumentType]
                 username = current_user.username
