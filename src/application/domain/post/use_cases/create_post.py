@@ -3,12 +3,10 @@ import logging
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
     LocationNotFoundException,
-    UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
-    UserNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (

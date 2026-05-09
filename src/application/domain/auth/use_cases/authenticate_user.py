@@ -1,17 +1,17 @@
 import logging
 
-from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.user import (
-    UserRepository,
-)
-from application.schemas.user import UserResponseSchema
-from application.resources.auth import verify_password
 from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     WrongUsernameOrPasswordException,
 )
+from application.infrastructure.postgress.database import database
+from application.infrastructure.postgress.repositories.user import (
+    UserRepository,
+)
+from application.resources.auth import verify_password
+from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 

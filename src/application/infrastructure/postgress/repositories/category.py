@@ -1,6 +1,7 @@
 import uuid
 from typing import Type, cast
-from sqlalchemy import CursorResult, insert, select, delete, update
+
+from sqlalchemy import CursorResult, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.core.exceptions.database_exceptions import (

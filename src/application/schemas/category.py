@@ -1,12 +1,14 @@
 import uuid
-from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from application.resources.field_description import (
     CATEGORY_ID,
-    TITLE,
+    CREATED_AT,
     DESCRIPTION,
     IS_PUBLISHED,
-    CREATED_AT,
+    TITLE,
 )
 
 

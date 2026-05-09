@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from application.api.depends import (
@@ -11,13 +12,12 @@ from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
     PostNotFoundByIdException,
-    UserNotFoundByIdException,
 )
 from application.domain.post.use_cases.create_post import CreatePostUseCase
 from application.domain.post.use_cases.delete_post import DeletePostUseCase
 from application.domain.post.use_cases.get_post import GetPostUseCase
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
-from application.schemas.post import PostResponseSchema, PostRequestSchema
+from application.schemas.post import PostRequestSchema, PostResponseSchema
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService
 

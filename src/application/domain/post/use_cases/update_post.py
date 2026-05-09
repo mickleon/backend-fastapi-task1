@@ -6,13 +6,11 @@ from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
     LocationNotFoundException,
     PostNotFoundException,
-    UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
     PostNotFoundByIdException,
-    UserNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (

@@ -9,7 +9,6 @@ from application.api.depends import (
 from application.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
     PostNotFoundByIdException,
-    UserNotFoundByIdException,
 )
 from application.domain.comment.use_cases.create_comment import (
     CreateCommentUseCase,
@@ -24,8 +23,8 @@ from application.domain.comment.use_cases.update_comment import (
     UpdateCommentUseCase,
 )
 from application.schemas.comment import (
-    CommentResponseSchema,
     CommentRequestSchema,
+    CommentResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService

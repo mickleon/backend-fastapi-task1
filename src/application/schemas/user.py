@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import HTTPException, status
 from pydantic import (
     BaseModel,
@@ -6,16 +8,16 @@ from pydantic import (
     Field,
     field_validator,
 )
-from datetime import datetime
+
 from application.resources.field_description import (
-    USER_ID,
-    USERNAME,
     EMAIL,
     FIRST_NAME,
-    LAST_NAME,
     IS_ACTIVE,
     IS_ADMIN,
+    LAST_NAME,
     PASSWORD,
+    USER_ID,
+    USERNAME,
 )
 
 

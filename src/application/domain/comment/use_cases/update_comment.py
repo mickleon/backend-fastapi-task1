@@ -4,12 +4,10 @@ from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
     PostNotFoundException,
-    UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
     PostNotFoundByIdException,
-    UserNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.comment import (

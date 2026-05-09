@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from application.api.depends import (
@@ -23,8 +24,8 @@ from application.domain.category.use_cases.update_category import (
     UpdateCategoryUseCase,
 )
 from application.schemas.category import (
-    CategoryResponseSchema,
     CategoryRequestSchema,
+    CategoryResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService

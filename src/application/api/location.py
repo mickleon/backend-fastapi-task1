@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from application.api.depends import (
@@ -23,8 +24,8 @@ from application.domain.location.use_cases.update_location import (
     UpdateLocationUseCase,
 )
 from application.schemas.location import (
-    LocationResponseSchema,
     LocationRequestSchema,
+    LocationResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService

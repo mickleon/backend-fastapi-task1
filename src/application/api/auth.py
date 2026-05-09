@@ -1,22 +1,22 @@
 from typing import Annotated
 
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from application.schemas.auth import Token
+from application.api.depends import (
+    authenticate_user_use_case,
+    create_access_token_use_case,
+)
+from application.core.exceptions.domain_exceptions import (
+    WrongUsernameOrPasswordException,
+)
 from application.domain.auth.use_cases.authenticate_user import (
     AuthenticateUserUseCase,
 )
 from application.domain.auth.use_cases.create_access_token import (
     CreateAccessTokenUseCase,
 )
-from application.core.exceptions.domain_exceptions import (
-    WrongUsernameOrPasswordException,
-)
-from application.api.depends import (
-    create_access_token_use_case,
-    authenticate_user_use_case,
-)
+from application.schemas.auth import Token
 
 router = APIRouter()
 

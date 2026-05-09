@@ -1,19 +1,20 @@
 from typing import Type, cast
-from sqlalchemy import CursorResult, insert, or_, select, delete, update
+
+from sqlalchemy import CursorResult, delete, insert, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.infrastructure.postgress.models.user import (
-    User as UserModel,
-)
-from application.infrastructure.postgress.models.post import (
-    Post as PostModel,
-)
-from application.schemas.user import UserRequestSchema
 from application.core.exceptions.database_exceptions import (
     UserEmailAlreadyExistsException,
     UserNotFoundException,
     UserUsernameAlreadyExistsException,
 )
+from application.infrastructure.postgress.models.post import (
+    Post as PostModel,
+)
+from application.infrastructure.postgress.models.user import (
+    User as UserModel,
+)
+from application.schemas.user import UserRequestSchema
 
 
 class UserRepository:

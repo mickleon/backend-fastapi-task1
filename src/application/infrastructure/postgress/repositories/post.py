@@ -7,7 +7,6 @@ from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
     LocationNotFoundException,
     PostNotFoundException,
-    UserNotFoundException,
 )
 from application.infrastructure.postgress.models.post import (
     Post as PostModel,

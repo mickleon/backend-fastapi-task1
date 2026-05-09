@@ -1,27 +1,30 @@
 import logging
 from typing import Annotated
+
 from fastapi import Depends
 from jose import JWTError, jwt
 
+from application.core.config import settings
 from application.core.exceptions.auth_exceptions import (
     CredentialsException,
 )
 from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
 )
-from application.schemas.user import UserResponseSchema
-from application.resources.auth import (
-    oauth2_scheme,
-    optional_oauth2_scheme,
+from application.infrastructure.postgress.database import (
+    Database,
 )
 from application.infrastructure.postgress.database import (
     database as postgress_database,
-    Database,
 )
 from application.infrastructure.postgress.repositories.user import (
     UserRepository,
 )
-from application.core.config import settings
+from application.resources.auth import (
+    oauth2_scheme,
+    optional_oauth2_scheme,
+)
+from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from application.resources.field_description import (
     AUTHOR_ID,

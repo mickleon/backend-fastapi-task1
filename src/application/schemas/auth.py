@@ -1,4 +1,4 @@
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
 
 from application.resources.field_description import (
     ACCESS_TOKEN,

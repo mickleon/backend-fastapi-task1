@@ -1,8 +1,8 @@
 import logging
 
 from application.core.exceptions.database_exceptions import (
-    UserUsernameAlreadyExistsException,
     UserEmailAlreadyExistsException,
+    UserUsernameAlreadyExistsException,
 )
 from application.core.exceptions.domain_exceptions import (
     UserUsernameOrEmailIsNotUniqueException,
@@ -11,8 +11,8 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.user import (
     UserRepository,
 )
-from application.schemas.user import UserRequestSchema, UserResponseSchema
 from application.resources.auth import get_password_hash
+from application.schemas.user import UserRequestSchema, UserResponseSchema
 
 logger = logging.getLogger(__name__)
 

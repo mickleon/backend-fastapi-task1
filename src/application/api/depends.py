@@ -1,3 +1,9 @@
+from application.domain.auth.use_cases.authenticate_user import (
+    AuthenticateUserUseCase,
+)
+from application.domain.auth.use_cases.create_access_token import (
+    CreateAccessTokenUseCase,
+)
 from application.domain.category.use_cases.create_category import (
     CreateCategoryUseCase,
 )
@@ -50,12 +56,6 @@ from application.domain.user.use_cases.get_user_posts_by_username import (
 )
 from application.domain.user.use_cases.update_user_by_username import (
     UpdateUserByUsernameUseCase,
-)
-from application.domain.auth.use_cases.authenticate_user import (
-    AuthenticateUserUseCase,
-)
-from application.domain.auth.use_cases.create_access_token import (
-    CreateAccessTokenUseCase,
 )
 
 

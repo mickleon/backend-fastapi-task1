@@ -1,4 +1,5 @@
 import logging
+
 from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.category import (

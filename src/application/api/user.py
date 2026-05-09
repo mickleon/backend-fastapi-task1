@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette import status
+
 from application.api.depends import (
+    create_user_use_case,
     delete_user_by_username_use_case,
     get_user_by_username_use_case,
     get_user_posts_by_username_use_case,
-    create_user_use_case,
     update_user_by_username_use_case,
 )
 from application.core.exceptions.domain_exceptions import (
@@ -25,7 +26,7 @@ from application.domain.user.use_cases.update_user_by_username import (
     UpdateUserByUsernameUseCase,
 )
 from application.schemas.post import PostsPageResponseSchema
-from application.schemas.user import UserResponseSchema, UserRequestSchema
+from application.schemas.user import UserRequestSchema, UserResponseSchema
 from application.services.auth import AuthService
 
 router = APIRouter()

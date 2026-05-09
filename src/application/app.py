@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from application.api.auth import router as auth_router
-from application.api.user import router as user_router
 from application.api.category import router as category_router
+from application.api.comment import router as comment_router
 from application.api.location import router as location_router
 from application.api.post import router as post_router
-from application.api.comment import router as comment_router
+from application.api.user import router as user_router
 from application.core.config import settings
 
 

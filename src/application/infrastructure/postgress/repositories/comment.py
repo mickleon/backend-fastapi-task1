@@ -1,17 +1,17 @@
 from typing import Type, cast
-from sqlalchemy import CursorResult, insert, select, delete, update
+
+from sqlalchemy import CursorResult, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
     PostNotFoundException,
-    UserNotFoundException,
 )
 from application.infrastructure.postgress.models.comment import (
     Comment as CommentModel,
 )
-from application.infrastructure.postgress.models.user import User as UserModel
 from application.infrastructure.postgress.models.post import Post as PostModel
+from application.infrastructure.postgress.models.user import User as UserModel
 from application.schemas.comment import CommentRequestSchema
 
 

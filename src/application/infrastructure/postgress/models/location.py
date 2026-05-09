@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+
 from sqlalchemy.orm import Mapped, mapped_column
 
 from application.infrastructure.postgress.database import Base
