@@ -87,6 +87,17 @@ class PostNotFoundByIdException(BaseDomainException):
         super().__init__(detail=self._exception_text_template)
 
 
+class PostHasNoImageException(BaseDomainException):
+    _exception_text_template = "Пост с id '{id}' не содержит изображения"
+
+    def __init__(self, id: uuid.UUID) -> None:
+        self._exception_text_template = self._exception_text_template.format(
+            id=id
+        )
+
+        super().__init__(detail=self._exception_text_template)
+
+
 class CommentNotFoundByIdException(BaseDomainException):
     _exception_text_template = "Комментарий с id '{id}' не найден"
 
@@ -100,6 +111,13 @@ class CommentNotFoundByIdException(BaseDomainException):
 
 class WrongUsernameOrPasswordException(BaseDomainException):
     _exception_text = 'Неверные имя пользователя или пароль'
+
+    def __init__(self) -> None:
+        super().__init__(detail=self._exception_text)
+
+
+class UploadFileIsNotImageException(BaseDomainException):
+    _exception_text = 'Загруженный файл не является изображением'
 
     def __init__(self) -> None:
         super().__init__(detail=self._exception_text)

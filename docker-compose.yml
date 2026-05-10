@@ -23,7 +23,7 @@ services:
     image: backend-fastapi-blogicum
     volumes:
       - ./src:/app/src
-      - ./images:/images
+      - images_data:/images
     env_file:
       - .env
     ports:
@@ -48,3 +48,4 @@ networks:
 
 volumes:
   db_data:
+  images_data:

@@ -4,8 +4,8 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from application.resources.field_description import (
-    COMMENT_ID,
     AUTHOR_ID,
+    COMMENT_ID,
     COMMENTS_LIST_ITEMS,
     CREATED_AT,
     HAS_NEXT,

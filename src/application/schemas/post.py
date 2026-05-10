@@ -72,3 +72,7 @@ class PostsPageResponseSchema(BaseModel):
         default_factory=list, description=POST_LIST_ITEMS
     )
     has_next: bool = Field(description=HAS_NEXT)
+
+
+class PostImageResponse(BaseModel):
+    image_path: str = Field(description=IMAGE_PATH)

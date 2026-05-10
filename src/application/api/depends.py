@@ -70,6 +70,7 @@ from application.domain.location.use_cases.get_location_posts_admin import (
 from application.domain.location.use_cases.update_location import (
     UpdateLocationUseCase,
 )
+from application.domain.post.use_cases.add_post_image import AddPostImageUseCase
 from application.domain.post.use_cases.create_post import CreatePostUseCase
 from application.domain.post.use_cases.create_post_admin import (
     CreatePostAdminUseCase,
@@ -86,6 +87,7 @@ from application.domain.post.use_cases.get_post_comments import (
 from application.domain.post.use_cases.get_post_comments_admin import (
     GetPostCommentsAdminUseCase,
 )
+from application.domain.post.use_cases.get_post_image import GetPostImageUseCase
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
 from application.domain.post.use_cases.update_post_admin import (
     UpdatePostAdminUseCase,
@@ -183,6 +185,14 @@ def update_post_use_case() -> UpdatePostUseCase:
 
 def delete_post_use_case() -> DeletePostUseCase:
     return DeletePostUseCase()
+
+
+def add_post_image_use_case() -> AddPostImageUseCase:
+    return AddPostImageUseCase()
+
+
+def get_post_image_use_case() -> GetPostImageUseCase:
+    return GetPostImageUseCase()
 
 
 def get_post_admin_use_case() -> GetPostAdminUseCase:
