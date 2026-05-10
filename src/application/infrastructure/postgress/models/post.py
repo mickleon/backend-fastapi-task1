@@ -30,7 +30,7 @@ class Post(Base):
         ForeignKey('categories.id', ondelete='SET NULL'),
         nullable=True,
     )
-    image_url: Mapped[str | None] = mapped_column(nullable=True)
+    image_path: Mapped[str | None] = mapped_column(nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

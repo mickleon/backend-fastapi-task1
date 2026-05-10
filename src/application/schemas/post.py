@@ -2,14 +2,14 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from application.resources.field_description import (
     AUTHOR_ID,
     CATEGORY_ID,
     CREATED_AT,
     HAS_NEXT,
-    IMAGE_URL,
+    IMAGE_PATH,
     IS_PUBLISHED,
     LOCATION_ID,
     POST_ID,
@@ -26,7 +26,7 @@ class PostBaseSchema(BaseModel):
 
     location_id: uuid.UUID | None = Field(default=None, description=LOCATION_ID)
     category_id: uuid.UUID | None = Field(default=None, description=CATEGORY_ID)
-    image_url: AnyUrl | None = Field(default=None, description=IMAGE_URL)
+    image_path: str | None = Field(default=None, description=IMAGE_PATH)
 
 
 class PostRequestSchema(PostBaseSchema):
