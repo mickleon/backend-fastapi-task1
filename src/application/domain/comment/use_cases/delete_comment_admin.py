@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
 )
@@ -17,7 +16,7 @@ from application.schemas.user import UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class DeleteCommentUseCase:
+class DeleteCommentAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = CommentRepository()
@@ -27,15 +26,7 @@ class DeleteCommentUseCase:
     ) -> None:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.get_published(session=session, id=id)
-                if comment.author_id == current_user.id:
-                    await self._repo.delete(session=session, id=id)
-                else:
-                    error = AccessDeniedException()
-                    logger.error(
-                        f'Доступ запрещен: пользователь {current_user.username} попытался удалить комментарий с id {comment.id}'
-                    )
-                    raise error
+                await self._repo.delete(session=session, id=id)
             except CommentNotFoundException:
                 error = CommentNotFoundByIdException(id=id)
                 username = current_user.username

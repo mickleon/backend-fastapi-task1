@@ -1,7 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field
+from fastapi import HTTPException, status
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_validator
 
 from application.resources.field_description import (
     AUTHOR_ID,
@@ -22,10 +23,6 @@ from application.resources.field_description import (
 class PostBaseSchema(BaseModel):
     title: str = Field(max_length=256, description=TITLE)
     text: str = Field(max_length=5000, description=TEXT)
-    pub_date: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        description=PUB_DATE,
-    )
 
     location_id: uuid.UUID | None = Field(default=None, description=LOCATION_ID)
     category_id: uuid.UUID | None = Field(default=None, description=CATEGORY_ID)
@@ -33,7 +30,32 @@ class PostBaseSchema(BaseModel):
 
 
 class PostRequestSchema(PostBaseSchema):
+    pub_date: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description=PUB_DATE,
+    )
+
+    @field_validator('pub_date', mode='after')
+    @staticmethod
+    def check_pub_date(pub_date: datetime) -> datetime:
+        if pub_date < datetime.now(timezone.utc) - timedelta(seconds=5):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail='Нельзя делать публикации с прошедшей датой публикации',
+            )
+        return pub_date
+
+
+class PostRequestAdminSchema(PostRequestSchema):
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
+
+
+class PostUpdateSchema(PostBaseSchema):
     pass
+
+
+class PostUpdateAdminSchema(PostBaseSchema):
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
 
 class PostResponseSchema(PostBaseSchema):

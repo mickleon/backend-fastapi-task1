@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
@@ -27,15 +28,13 @@ class UpdateCommentUseCase:
 
     async def execute(
         self,
-        id: int,
+        id: uuid.UUID,
         data: CommentRequestSchema,
         current_user: UserResponseSchema,
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
                 comment = await self._repo.get_published(session=session, id=id)
-                if not comment:
-                    raise CommentNotFoundException()
                 if comment.author_id == current_user.id:
                     comment = await self._repo.update(
                         session=session, id=id, data=data

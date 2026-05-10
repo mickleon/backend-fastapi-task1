@@ -1,65 +1,41 @@
 import logging
-import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
     LocationNotFoundException,
-    PostNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
-    PostNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
 from application.schemas.post import (
+    PostRequestAdminSchema,
     PostResponseSchema,
-    PostUpdateSchema,
 )
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class UpdatePostUseCase:
+class CreatePostAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = PostRepository()
 
     async def execute(
         self,
-        id: uuid.UUID,
-        data: PostUpdateSchema,
+        data: PostRequestAdminSchema,
         current_user: UserResponseSchema,
     ) -> PostResponseSchema:
         async with self._database.session() as session:
             try:
-                post = await self._repo.get(session=session, id=id)
-                if not post.is_published:
-                    raise PostNotFoundException()
-                if post.author_id == current_user.id:
-                    post = await self._repo.update(
-                        session=session,
-                        id=id,
-                        data=data,
-                    )
-                else:
-                    error = AccessDeniedException()
-                    logger.error(
-                        f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать публикацию с id {post.id}'
-                    )
-                    raise error
-            except PostNotFoundException:
-                error = PostNotFoundByIdException(id=id)
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                post = await self._repo.create(
+                    session=session, data=data, author_id=current_user.id
                 )
-                raise error
             except CategoryNotFoundException:
                 error = CategoryNotFoundByIdException(id=data.category_id)  # pyright: ignore[reportArgumentType]
                 username = current_user.username

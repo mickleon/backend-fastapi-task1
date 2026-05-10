@@ -25,7 +25,12 @@ from application.infrastructure.postgress.models.post import (
 from application.infrastructure.postgress.models.user import (
     User as UserModel,
 )
-from application.schemas.post import PostRequestSchema
+from application.schemas.post import (
+    PostRequestAdminSchema,
+    PostRequestSchema,
+    PostUpdateAdminSchema,
+    PostUpdateSchema,
+)
 from application.schemas.user import UserResponseSchema
 
 
@@ -118,7 +123,10 @@ class PostRepository:
         return list(comments)
 
     async def create(
-        self, session: AsyncSession, data: PostRequestSchema, author_id: int
+        self,
+        session: AsyncSession,
+        data: PostRequestSchema | PostRequestAdminSchema,
+        author_id: int,
     ) -> PostModel:
         if data.location_id:
             location = await session.get(self._location_model, data.location_id)
@@ -143,7 +151,7 @@ class PostRepository:
         self,
         session: AsyncSession,
         id: uuid.UUID,
-        data: PostRequestSchema,
+        data: PostUpdateSchema | PostUpdateAdminSchema,
     ) -> PostModel:
         post = await session.get(self._model, id)
         if not post:

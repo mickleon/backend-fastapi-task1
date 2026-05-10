@@ -15,7 +15,11 @@ from application.infrastructure.postgress.models.post import (
 from application.infrastructure.postgress.models.user import (
     User as UserModel,
 )
-from application.schemas.user import UserRequestSchema, UserResponseSchema
+from application.schemas.user import (
+    UserRequestAdminSchema,
+    UserRequestSchema,
+    UserResponseSchema,
+)
 
 
 class UserRepository:
@@ -101,7 +105,9 @@ class UserRepository:
         return list(posts)
 
     async def create(
-        self, session: AsyncSession, data: UserRequestSchema
+        self,
+        session: AsyncSession,
+        data: UserRequestSchema | UserRequestAdminSchema,
     ) -> UserModel:
         existing_user = await session.scalar(
             select(self._model).where(
@@ -128,7 +134,10 @@ class UserRepository:
         return user  # pyright: ignore[reportReturnType]
 
     async def update(
-        self, session: AsyncSession, username: str, data: UserRequestSchema
+        self,
+        session: AsyncSession,
+        username: str,
+        data: UserRequestSchema | UserRequestAdminSchema,
     ) -> UserModel:
         user = await self.get(session=session, username=username)
 

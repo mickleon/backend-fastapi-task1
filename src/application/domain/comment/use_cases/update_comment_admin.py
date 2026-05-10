@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
@@ -11,7 +12,7 @@ from application.infrastructure.postgress.repositories.comment import (
     CommentRepository,
 )
 from application.schemas.comment import (
-    CommentRequestSchema,
+    CommentRequestAdminSchema,
     CommentResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
@@ -26,15 +27,12 @@ class UpdateCommentAdminUseCase:
 
     async def execute(
         self,
-        id: int,
-        data: CommentRequestSchema,
+        id: uuid.UUID,
+        data: CommentRequestAdminSchema,
         current_user: UserResponseSchema,
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.get(session=session, id=id)
-                if not comment:
-                    raise CommentNotFoundException()
                 comment = await self._repo.update(
                     session=session, id=id, data=data
                 )

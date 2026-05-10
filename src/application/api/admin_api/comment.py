@@ -1,8 +1,9 @@
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from application.api.depends import (
     create_comment_admin_use_case,
-    delete_comment_use_case,
+    delete_comment_admin_use_case,
     get_comment_admin_use_case,
     update_comment_admin_use_case,
 )
@@ -13,8 +14,8 @@ from application.core.exceptions.domain_exceptions import (
 from application.domain.comment.use_cases.create_comment_admin import (
     CreateCommentAdminUseCase,
 )
-from application.domain.comment.use_cases.delete_comment import (
-    DeleteCommentUseCase,
+from application.domain.comment.use_cases.delete_comment_admin import (
+    DeleteCommentAdminUseCase,
 )
 from application.domain.comment.use_cases.get_comment_admin import (
     GetCommentAdminUseCase,
@@ -23,7 +24,7 @@ from application.domain.comment.use_cases.update_comment_admin import (
     UpdateCommentAdminUseCase,
 )
 from application.schemas.comment import (
-    CommentRequestSchema,
+    CommentRequestAdminSchema,
     CommentResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
@@ -34,7 +35,7 @@ router = APIRouter()
 
 @router.get('/{id}', response_model=CommentResponseSchema)
 async def get_comment_admin(
-    id: int,
+    id: uuid.UUID,
     use_case: GetCommentAdminUseCase = Depends(get_comment_admin_use_case),
     current_user: UserResponseSchema | None = Depends(
         AuthService.require_admin
@@ -54,8 +55,8 @@ async def get_comment_admin(
     response_model=CommentResponseSchema,
 )
 async def create_comment_admin(
-    data: CommentRequestSchema,
-    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
+    data: CommentRequestAdminSchema,
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
     use_case: CreateCommentAdminUseCase = Depends(
         create_comment_admin_use_case
     ),
@@ -73,8 +74,8 @@ async def create_comment_admin(
     response_model=CommentResponseSchema,
 )
 async def update_comment_admin(
-    id: int,
-    data: CommentRequestSchema,
+    id: uuid.UUID,
+    data: CommentRequestAdminSchema,
     use_case: UpdateCommentAdminUseCase = Depends(
         update_comment_admin_use_case
     ),
@@ -95,8 +96,10 @@ async def update_comment_admin(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_comment_admin(
-    id: int,
-    use_case: DeleteCommentUseCase = Depends(delete_comment_use_case),
+    id: uuid.UUID,
+    use_case: DeleteCommentAdminUseCase = Depends(
+        delete_comment_admin_use_case
+    ),
     current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ):
     try:

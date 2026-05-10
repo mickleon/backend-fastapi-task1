@@ -22,6 +22,7 @@ DESCRIPTION: Final[str] = 'Описание'
 
 LOCATION_NAME: Final[str] = 'Название места'
 
+COMMENT_ID: Final[str] = 'ID комментария'
 LOCATION_ID: Final[str] = 'ID местоположения'
 CATEGORY_ID: Final[str] = 'ID категории'
 IMAGE_URL: Final[str] = 'URL прикрепленного изображения'

@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     PostNotFoundException,
 )
@@ -17,7 +16,7 @@ from application.schemas.user import UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class DeletePostUseCase:
+class DeletePostAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = PostRepository()
@@ -27,15 +26,7 @@ class DeletePostUseCase:
     ) -> None:
         async with self._database.session() as session:
             try:
-                post = await self._repo.get_published(session=session, id=id)
-                if post.author_id == current_user.id:
-                    await self._repo.delete(session=session, id=id)
-                else:
-                    error = AccessDeniedException()
-                    logger.error(
-                        f'Доступ запрещен: пользователь {current_user.username} попытался удалить публикацию с id {post.id}'
-                    )
-                    raise error
+                await self._repo.delete(session=session, id=id)
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=id)
                 username = current_user.username

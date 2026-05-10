@@ -90,7 +90,7 @@ class PostNotFoundByIdException(BaseDomainException):
 class CommentNotFoundByIdException(BaseDomainException):
     _exception_text_template = "Комментарий с id '{id}' не найден"
 
-    def __init__(self, id: int) -> None:
+    def __init__(self, id: uuid.UUID) -> None:
         self._exception_text_template = self._exception_text_template.format(
             id=id
         )

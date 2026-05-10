@@ -2,11 +2,9 @@ import logging
 
 from application.core.exceptions.database_exceptions import (
     UserEmailAlreadyExistsException,
-    UserNotFoundException,
     UserUsernameAlreadyExistsException,
 )
 from application.core.exceptions.domain_exceptions import (
-    UserNotFoundByUsernameException,
     UserUsernameOrEmailIsNotUniqueException,
 )
 from application.infrastructure.postgress.database import database
@@ -22,37 +20,29 @@ from application.schemas.user import (
 logger = logging.getLogger(__name__)
 
 
-class UpdateUserByUsernameAdminUseCase:
+class CreateUserAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
 
     async def execute(
         self,
-        target_username: str,
         data: UserRequestAdminSchema,
-        current_user: UserResponseSchema,
+        current_user: UserResponseSchema | None,
     ) -> UserResponseSchema:
         data.password = get_password_hash(password=data.password)
         async with self._database.session() as session:
             try:
-                user = await self._repo.update(
-                    session=session, username=target_username, data=data
-                )
-            except UserNotFoundException:
-                error = UserNotFoundByUsernameException(
-                    username=target_username
-                )
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
-                )
-                raise error
+                user = await self._repo.create(session=session, data=data)
             except UserUsernameAlreadyExistsException:
                 error = UserUsernameOrEmailIsNotUniqueException.from_username(
                     username=data.username
                 )
-                username = current_user.username
+                username = (
+                    current_user.username
+                    if current_user is not None
+                    else 'анонимный'
+                )
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
                 )
@@ -61,7 +51,11 @@ class UpdateUserByUsernameAdminUseCase:
                 error = UserUsernameOrEmailIsNotUniqueException.from_email(
                     email=data.email
                 )
-                username = current_user.username
+                username = (
+                    current_user.username
+                    if current_user is not None
+                    else 'анонимный'
+                )
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
                 )

@@ -34,6 +34,9 @@ from application.domain.comment.use_cases.create_comment_admin import (
 from application.domain.comment.use_cases.delete_comment import (
     DeleteCommentUseCase,
 )
+from application.domain.comment.use_cases.delete_comment_admin import (
+    DeleteCommentAdminUseCase,
+)
 from application.domain.comment.use_cases.get_comment import (
     GetCommentUseCase,
 )
@@ -68,7 +71,13 @@ from application.domain.location.use_cases.update_location import (
     UpdateLocationUseCase,
 )
 from application.domain.post.use_cases.create_post import CreatePostUseCase
+from application.domain.post.use_cases.create_post_admin import (
+    CreatePostAdminUseCase,
+)
 from application.domain.post.use_cases.delete_post import DeletePostUseCase
+from application.domain.post.use_cases.delete_post_admin import (
+    DeletePostAdminUseCase,
+)
 from application.domain.post.use_cases.get_post import GetPostUseCase
 from application.domain.post.use_cases.get_post_admin import GetPostAdminUseCase
 from application.domain.post.use_cases.get_post_comments import (
@@ -82,6 +91,9 @@ from application.domain.post.use_cases.update_post_admin import (
     UpdatePostAdminUseCase,
 )
 from application.domain.user.use_cases.create_user import CreateUserUseCase
+from application.domain.user.use_cases.create_user_admin import (
+    CreateUserAdminUseCase,
+)
 from application.domain.user.use_cases.delete_user_by_username import (
     DeleteUserByUsernameUseCase,
 )
@@ -137,6 +149,10 @@ def get_user_by_username_admin_use_case() -> GetUserByUsernameAdminUseCase:
     return GetUserByUsernameAdminUseCase()
 
 
+def create_user_admin_use_case() -> CreateUserAdminUseCase:
+    return CreateUserAdminUseCase()
+
+
 def get_user_posts_by_username_admin_use_case() -> (
     GetUserPostsByUsernameAdminUseCase
 ):
@@ -177,8 +193,16 @@ def get_post_comments_admin_use_case() -> GetPostCommentsAdminUseCase:
     return GetPostCommentsAdminUseCase()
 
 
+def create_post_admin_use_case() -> CreatePostAdminUseCase:
+    return CreatePostAdminUseCase()
+
+
 def update_post_admin_use_case() -> UpdatePostAdminUseCase:
     return UpdatePostAdminUseCase()
+
+
+def delete_post_admin_use_case() -> DeletePostAdminUseCase:
+    return DeletePostAdminUseCase()
 
 
 def get_comment_use_case() -> GetCommentUseCase:
@@ -207,6 +231,10 @@ def create_comment_admin_use_case() -> CreateCommentAdminUseCase:
 
 def update_comment_admin_use_case() -> UpdateCommentAdminUseCase:
     return UpdateCommentAdminUseCase()
+
+
+def delete_comment_admin_use_case() -> DeleteCommentAdminUseCase:
+    return DeleteCommentAdminUseCase()
 
 
 def get_category_use_case() -> GetCategoryUseCase:

@@ -1,7 +1,9 @@
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from application.api.depends import (
     create_comment_use_case,
+    delete_comment_use_case,
     get_comment_use_case,
     update_comment_use_case,
 )
@@ -11,6 +13,9 @@ from application.core.exceptions.domain_exceptions import (
 )
 from application.domain.comment.use_cases.create_comment import (
     CreateCommentUseCase,
+)
+from application.domain.comment.use_cases.delete_comment import (
+    DeleteCommentUseCase,
 )
 from application.domain.comment.use_cases.get_comment import (
     GetCommentUseCase,
@@ -30,7 +35,7 @@ router = APIRouter()
 
 @router.get('/{id}', response_model=CommentResponseSchema)
 async def get_comment(
-    id: int,
+    id: uuid.UUID,
     use_case: GetCommentUseCase = Depends(get_comment_use_case),
     current_user: UserResponseSchema | None = Depends(
         AuthService.get_current_user_or_none
@@ -67,7 +72,7 @@ async def create_comment(
     response_model=CommentResponseSchema,
 )
 async def update_comment(
-    id: int,
+    id: uuid.UUID,
     data: CommentRequestSchema,
     use_case: UpdateCommentUseCase = Depends(update_comment_use_case),
     current_user: UserResponseSchema = Depends(AuthService.get_current_user),
@@ -76,6 +81,23 @@ async def update_comment(
         return await use_case.execute(
             id=id, data=data, current_user=current_user
         )
+    except CommentNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+
+
+@router.delete(
+    '/{id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_comment(
+    id: uuid.UUID,
+    use_case: DeleteCommentUseCase = Depends(delete_comment_use_case),
+    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
+):
+    try:
+        return await use_case.execute(id=id, current_user=current_user)
     except CommentNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()

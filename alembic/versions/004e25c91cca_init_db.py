@@ -90,7 +90,7 @@ def upgrade() -> None:
     )
     op.create_table(
         'comments',
-        sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column('id', sa.Uuid(), nullable=False),
         sa.Column('text', sa.String(), nullable=False),
         sa.Column('post_id', sa.Uuid(), nullable=False),
         sa.Column('author_id', sa.Integer(), nullable=False),

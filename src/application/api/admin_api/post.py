@@ -3,7 +3,8 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from application.api.depends import (
-    delete_post_use_case,
+    create_post_admin_use_case,
+    delete_post_admin_use_case,
     get_post_admin_use_case,
     get_post_comments_admin_use_case,
     update_post_admin_use_case,
@@ -13,7 +14,12 @@ from application.core.exceptions.domain_exceptions import (
     LocationNotFoundByIdException,
     PostNotFoundByIdException,
 )
-from application.domain.post.use_cases.delete_post import DeletePostUseCase
+from application.domain.post.use_cases.create_post_admin import (
+    CreatePostAdminUseCase,
+)
+from application.domain.post.use_cases.delete_post_admin import (
+    DeletePostAdminUseCase,
+)
 from application.domain.post.use_cases.get_post_admin import GetPostAdminUseCase
 from application.domain.post.use_cases.get_post_comments_admin import (
     GetPostCommentsAdminUseCase,
@@ -22,7 +28,11 @@ from application.domain.post.use_cases.update_post_admin import (
     UpdatePostAdminUseCase,
 )
 from application.schemas.comment import CommentsPageResponseSchema
-from application.schemas.post import PostRequestSchema, PostResponseSchema
+from application.schemas.post import (
+    PostRequestAdminSchema,
+    PostResponseSchema,
+    PostUpdateAdminSchema,
+)
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService
 
@@ -42,6 +52,27 @@ async def get_post_admin(
     except PostNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+
+
+@router.post(
+    '/',
+    status_code=status.HTTP_201_CREATED,
+    response_model=PostResponseSchema,
+)
+async def create_post_admin(
+    data: PostRequestAdminSchema,
+    use_case: CreatePostAdminUseCase = Depends(create_post_admin_use_case),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
+) -> PostResponseSchema:
+    try:
+        return await use_case.execute(data=data, current_user=current_user)
+    except (
+        LocationNotFoundByIdException,
+        CategoryNotFoundByIdException,
+    ) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
 
 
@@ -76,7 +107,7 @@ async def get_post_comments_admin(
 )
 async def update_post_admin(
     id: uuid.UUID,
-    data: PostRequestSchema,
+    data: PostUpdateAdminSchema,
     use_case: UpdatePostAdminUseCase = Depends(update_post_admin_use_case),
     current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> PostResponseSchema:
@@ -103,7 +134,7 @@ async def update_post_admin(
 )
 async def delete_post_admin(
     id: uuid.UUID,
-    use_case: DeletePostUseCase = Depends(delete_post_use_case),
+    use_case: DeletePostAdminUseCase = Depends(delete_post_admin_use_case),
     current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ):
     try:

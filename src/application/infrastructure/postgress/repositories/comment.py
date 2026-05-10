@@ -1,4 +1,5 @@
 from typing import Type, cast
+import uuid
 
 from sqlalchemy import CursorResult, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +16,10 @@ from application.infrastructure.postgress.models.user import User as UserModel
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
-from application.schemas.comment import CommentRequestSchema
+from application.schemas.comment import (
+    CommentRequestAdminSchema,
+    CommentRequestSchema,
+)
 
 
 class CommentRepository:
@@ -25,7 +29,7 @@ class CommentRepository:
         self._author_model: Type[UserModel] = UserModel
         self._post_model: Type[PostModel] = PostModel
 
-    async def get(self, session: AsyncSession, id: int) -> CommentModel:
+    async def get(self, session: AsyncSession, id: uuid.UUID) -> CommentModel:
         query = select(self._model).where(self._model.id == id)
         comment = await session.scalar(query)
 
@@ -35,7 +39,7 @@ class CommentRepository:
         return comment
 
     async def get_published(
-        self, session: AsyncSession, id: int
+        self, session: AsyncSession, id: uuid.UUID
     ) -> CommentModel:
         query = select(self._model).where(
             (self._model.id == id) & (self._model.is_published)
@@ -89,7 +93,10 @@ class CommentRepository:
         return comment  # pyright: ignore[reportReturnType]
 
     async def update(
-        self, session: AsyncSession, id: int, data: CommentRequestSchema
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        data: CommentRequestSchema | CommentRequestAdminSchema,
     ) -> CommentModel:
         comment = await self.get(session=session, id=id)
         if not comment:
@@ -107,7 +114,7 @@ class CommentRepository:
 
         return comment  # pyright: ignore[reportReturnType]
 
-    async def delete(self, session: AsyncSession, id: int) -> None:
+    async def delete(self, session: AsyncSession, id: uuid.UUID) -> None:
         query = delete(self._model).where(self._model.id == id)
         result = cast(CursorResult, await session.execute(query))
 

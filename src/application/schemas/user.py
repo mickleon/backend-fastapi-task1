@@ -52,6 +52,11 @@ class UserRequestSchema(UserBaseSchema):
         return password
 
 
+class UserRequestAdminSchema(UserRequestSchema):
+    is_active: bool = Field(default=True, description=IS_ACTIVE)
+    is_admin: bool = Field(default=False, description=IS_ADMIN)
+
+
 class UserResponseSchema(UserBaseSchema):
     id: int = Field(description=USER_ID)
     created_at: datetime = Field(description='Дата регистрации')

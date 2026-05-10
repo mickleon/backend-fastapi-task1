@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
@@ -23,7 +24,7 @@ class GetCommentUseCase:
 
     async def execute(
         self,
-        id: int,
+        id: uuid.UUID,
         current_user: UserResponseSchema | None,
     ) -> CommentResponseSchema:
         async with self._database.session() as session:

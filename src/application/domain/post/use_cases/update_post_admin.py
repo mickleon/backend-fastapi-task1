@@ -15,7 +15,10 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
-from application.schemas.post import PostRequestSchema, PostResponseSchema
+from application.schemas.post import (
+    PostResponseSchema,
+    PostUpdateAdminSchema,
+)
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
@@ -29,7 +32,7 @@ class UpdatePostAdminUseCase:
     async def execute(
         self,
         id: uuid.UUID,
-        data: PostRequestSchema,
+        data: PostUpdateAdminSchema,
         current_user: UserResponseSchema,
     ) -> PostResponseSchema:
         async with self._database.session() as session:
