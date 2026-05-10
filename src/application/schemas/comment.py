@@ -8,6 +8,7 @@ from application.resources.field_description import (
     COMMENTS_LIST_ITEMS,
     CREATED_AT,
     HAS_NEXT,
+    IS_PUBLISHED,
     POST_ID,
     TEXT,
 )
@@ -25,6 +26,7 @@ class CommentRequestSchema(CommentBaseSchema):
 class CommentResponseSchema(CommentBaseSchema):
     author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)
 

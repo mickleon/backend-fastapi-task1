@@ -22,6 +22,7 @@ class Comment(Base):
         ForeignKey('users.id', ondelete='SET NULL'),
         nullable=False,
     )
+    is_published: Mapped[bool] = mapped_column(nullable=False, default=True)
 
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now

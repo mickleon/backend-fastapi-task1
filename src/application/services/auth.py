@@ -6,6 +6,7 @@ from jose import JWTError, jwt
 
 from application.core.config import settings
 from application.core.exceptions.auth_exceptions import (
+    AccessDeniedException,
     CredentialsException,
 )
 from application.core.exceptions.database_exceptions import (
@@ -60,7 +61,11 @@ class AuthService:
     async def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
     ) -> UserResponseSchema:
-        return await AuthService._resolve_user_from_token(token=token)
+        user = await AuthService._resolve_user_from_token(token=token)
+        if user.is_active:
+            return user
+        else:
+            raise AccessDeniedException()
 
     @staticmethod
     async def get_current_user_or_none(
@@ -70,6 +75,20 @@ class AuthService:
             return None
 
         try:
-            return await AuthService._resolve_user_from_token(token=token)
+            user = await AuthService._resolve_user_from_token(token=token)
+            if user.is_active:
+                return user
+            else:
+                raise AccessDeniedException()
         except CredentialsException:
             return None
+
+    @staticmethod
+    async def require_admin(
+        token: Annotated[str, Depends(oauth2_scheme)],
+    ) -> UserResponseSchema:
+        user = await AuthService._resolve_user_from_token(token=token)
+        if user.is_admin and user.is_active:
+            return user
+        else:
+            raise AccessDeniedException()

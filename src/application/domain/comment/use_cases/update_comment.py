@@ -3,11 +3,9 @@ import logging
 from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
-    PostNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
-    PostNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.comment import (
@@ -35,11 +33,10 @@ class UpdateCommentUseCase:
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.get(session=session, id=id)
-                if (
-                    comment.author_id == current_user.id
-                    or current_user.is_admin
-                ):
+                comment = await self._repo.get_published(session=session, id=id)
+                if not comment:
+                    raise CommentNotFoundException()
+                if comment.author_id == current_user.id:
                     comment = await self._repo.update(
                         session=session, id=id, data=data
                     )
@@ -51,13 +48,6 @@ class UpdateCommentUseCase:
                     raise error
             except CommentNotFoundException:
                 error = CommentNotFoundByIdException(id=id)
-                username = current_user.username
-                logger.error(
-                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
-                )
-                raise error
-            except PostNotFoundException:
-                error = PostNotFoundByIdException(id=data.post_id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

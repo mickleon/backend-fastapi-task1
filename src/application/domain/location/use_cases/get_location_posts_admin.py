@@ -11,13 +11,16 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.location import (
     LocationRepository,
 )
-from application.schemas.location import LocationResponseSchema
+from application.schemas.post import (
+    PostResponseSchema,
+    PostsPageResponseSchema,
+)
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetLocationUseCase:
+class GetLocationPostsAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = LocationRepository()
@@ -25,13 +28,22 @@ class GetLocationUseCase:
     async def execute(
         self,
         id: uuid.UUID,
+        page: int,
+        page_size: int,
         current_user: UserResponseSchema | None,
-    ) -> LocationResponseSchema:
+    ) -> PostsPageResponseSchema:
+        page = max(page, 1)
+        limit = max(min(page_size, 100), 1)
+        offset = (page - 1) * limit
+
         async with self._database.session() as session:
             try:
-                location = await self._repo.get(session=session, id=id)
-                if not location.is_published:
-                    raise LocationNotFoundException()
+                posts = await self._repo.get_posts(
+                    session=session,
+                    id=id,
+                    offset=offset,
+                    limit=limit + 1,
+                )
             except LocationNotFoundException:
                 error = LocationNotFoundByIdException(id=id)
                 username = (
@@ -44,4 +56,15 @@ class GetLocationUseCase:
                 )
                 raise error
 
-            return LocationResponseSchema.model_validate(obj=location)
+            has_next = len(posts) > limit
+            if has_next:
+                posts = posts[:limit]
+
+            posts_data = [
+                PostResponseSchema.model_validate(obj=post) for post in posts
+            ]
+
+            return PostsPageResponseSchema(
+                items=posts_data,
+                has_next=has_next,
+            )

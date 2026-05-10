@@ -11,6 +11,9 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
+from application.infrastructure.postgress.repositories.user import (
+    UserRepository,
+)
 from application.schemas.comment import (
     CommentResponseSchema,
     CommentsPageResponseSchema,
@@ -24,6 +27,7 @@ class GetPostCommentsUseCase:
     def __init__(self):
         self._database = database
         self._repo = PostRepository()
+        self._user_repo = UserRepository()
 
     async def execute(
         self,
@@ -38,7 +42,7 @@ class GetPostCommentsUseCase:
 
         async with self._database.session() as session:
             try:
-                comments = await self._repo.get_comments(
+                comments = await self._repo.get_published_comments(
                     session=session,
                     id=id,
                     offset=offset,
@@ -63,6 +67,7 @@ class GetPostCommentsUseCase:
             comments_data = [
                 CommentResponseSchema.model_validate(obj=comment)
                 for comment in comments
+                if comment.is_published
             ]
 
             return CommentsPageResponseSchema(

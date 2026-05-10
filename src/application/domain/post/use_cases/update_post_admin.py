@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
     LocationNotFoundException,
@@ -22,7 +21,7 @@ from application.schemas.user import UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class UpdatePostUseCase:
+class UpdatePostAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = PostRepository()
@@ -35,21 +34,11 @@ class UpdatePostUseCase:
     ) -> PostResponseSchema:
         async with self._database.session() as session:
             try:
-                post = await self._repo.get(session=session, id=id)
-                if not post.is_published:
-                    raise PostNotFoundException()
-                if post.author_id == current_user.id:
-                    post = await self._repo.update(
-                        session=session,
-                        id=id,
-                        data=data,
-                    )
-                else:
-                    error = AccessDeniedException()
-                    logger.error(
-                        f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать публикацию с id {post.id}'
-                    )
-                    raise error
+                post = await self._repo.update(
+                    session=session,
+                    id=id,
+                    data=data,
+                )
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=id)
                 username = current_user.username

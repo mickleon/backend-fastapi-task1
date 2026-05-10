@@ -31,8 +31,6 @@ class PostBaseSchema(BaseModel):
     category_id: uuid.UUID | None = Field(default=None, description=CATEGORY_ID)
     image_url: AnyUrl | None = Field(default=None, description=IMAGE_URL)
 
-    is_published: bool = Field(default=True, description=IS_PUBLISHED)
-
 
 class PostRequestSchema(PostBaseSchema):
     pass
@@ -42,6 +40,7 @@ class PostResponseSchema(PostBaseSchema):
     id: uuid.UUID = Field(description=POST_ID)
     author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)
 

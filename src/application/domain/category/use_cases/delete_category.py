@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
 )
@@ -25,12 +24,6 @@ class DeleteCategoryUseCase:
     async def execute(
         self, id: uuid.UUID, current_user: UserResponseSchema
     ) -> None:
-        if not current_user.is_admin:
-            error = AccessDeniedException()
-            logger.error(
-                f'Доступ запрещен: пользователь {current_user.username} попытался удалить категрию с id {id}'
-            )
-            raise error
         async with self._database.session() as session:
             try:
                 await self._repo.delete(session=session, id=id)

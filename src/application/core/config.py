@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: SecretStr
     POSTGRES_RECONNECT_INTERVAL_SEC: int
 
+    class Config:
+        env_file = '.env'
+        env_file_encoding = 'utf-8'
+        extra = 'ignore'
+
     @property
     def postgres_url(self) -> str:
         creds = f'{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}'

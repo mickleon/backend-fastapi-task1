@@ -2,38 +2,36 @@ import logging
 import uuid
 
 from application.core.exceptions.database_exceptions import (
-    LocationNotFoundException,
+    CategoryNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    LocationNotFoundByIdException,
+    CategoryNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.location import (
-    LocationRepository,
+from application.infrastructure.postgress.repositories.category import (
+    CategoryRepository,
 )
-from application.schemas.location import LocationResponseSchema
+from application.schemas.category import CategoryResponseSchema
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetLocationUseCase:
+class GetCategoryAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = LocationRepository()
+        self._repo = CategoryRepository()
 
     async def execute(
         self,
         id: uuid.UUID,
         current_user: UserResponseSchema | None,
-    ) -> LocationResponseSchema:
+    ) -> CategoryResponseSchema:
         async with self._database.session() as session:
             try:
-                location = await self._repo.get(session=session, id=id)
-                if not location.is_published:
-                    raise LocationNotFoundException()
-            except LocationNotFoundException:
-                error = LocationNotFoundByIdException(id=id)
+                category = await self._repo.get(session=session, id=id)
+            except CategoryNotFoundException:
+                error = CategoryNotFoundByIdException(id=id)
                 username = (
                     current_user.username
                     if current_user is not None
@@ -43,5 +41,4 @@ class GetLocationUseCase:
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
                 )
                 raise error
-
-            return LocationResponseSchema.model_validate(obj=location)
+            return CategoryResponseSchema.model_validate(obj=category)

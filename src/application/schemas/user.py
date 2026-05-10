@@ -32,9 +32,6 @@ class UserBaseSchema(BaseModel):
         max_length=64, default=None, description=LAST_NAME
     )
 
-    is_active: bool = Field(default=True, description=IS_ACTIVE)
-    is_admin: bool = Field(default=False, description=IS_ADMIN)
-
 
 class UserRequestSchema(UserBaseSchema):
     password: str = Field(min_length=8, description=PASSWORD)
@@ -58,5 +55,7 @@ class UserRequestSchema(UserBaseSchema):
 class UserResponseSchema(UserBaseSchema):
     id: int = Field(description=USER_ID)
     created_at: datetime = Field(description='Дата регистрации')
+    is_active: bool = Field(default=True, description=IS_ACTIVE)
+    is_admin: bool = Field(default=False, description=IS_ADMIN)
 
     model_config = ConfigDict(from_attributes=True)

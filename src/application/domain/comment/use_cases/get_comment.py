@@ -28,7 +28,7 @@ class GetCommentUseCase:
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.get(session=session, id=id)
+                comment = await self._repo.get_published(session=session, id=id)
             except CommentNotFoundException:
                 error = CommentNotFoundByIdException(id=id)
                 username = (

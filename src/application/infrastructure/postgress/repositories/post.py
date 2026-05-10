@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Type, cast
 
 from sqlalchemy import CursorResult, delete, insert, select, update
@@ -25,6 +26,7 @@ from application.infrastructure.postgress.models.user import (
     User as UserModel,
 )
 from application.schemas.post import PostRequestSchema
+from application.schemas.user import UserResponseSchema
 
 
 class PostRepository:
@@ -37,6 +39,33 @@ class PostRepository:
 
     async def get(self, session: AsyncSession, id: uuid.UUID) -> PostModel:
         query = select(self._model).where(self._model.id == id)
+        post = await session.scalar(query)
+
+        if not post:
+            raise PostNotFoundException()
+
+        return post
+
+    async def get_published(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        current_user: UserResponseSchema | None = None,
+    ) -> PostModel:
+        query = select(self._model).where(
+            (self._model.id == id) & (self._model.is_published)
+        )
+
+        if current_user:
+            query = query.where(
+                (self._model.pub_date <= datetime.now(timezone.utc))
+                | (self._model.author_id == current_user.id)
+            )
+        else:
+            query = query.where(
+                self._model.pub_date <= datetime.now(timezone.utc)
+            )
+
         post = await session.scalar(query)
 
         if not post:
@@ -67,17 +96,38 @@ class PostRepository:
         comments = (await session.scalars(query)).all()
         return list(comments)
 
+    async def get_published_comments(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        offset: int,
+        limit: int,
+    ) -> list[CommentModel]:
+        await self.get_published(session=session, id=id)
+        query = (
+            select(self._comments_model)
+            .where(
+                (self._comments_model.post_id == id)
+                & (self._comments_model.is_published)
+            )
+            .order_by(self._comments_model.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        comments = (await session.scalars(query)).all()
+        return list(comments)
+
     async def create(
         self, session: AsyncSession, data: PostRequestSchema, author_id: int
     ) -> PostModel:
-        if data.location_id is not None:
+        if data.location_id:
             location = await session.get(self._location_model, data.location_id)
-            if not location:
+            if not location or not location.is_published:
                 raise LocationNotFoundException()
 
-        if data.category_id is not None:
+        if data.category_id:
             category = await session.get(self._category_model, data.category_id)
-            if not category:
+            if not category or not category.is_published:
                 raise CategoryNotFoundException()
 
         query = (
@@ -103,24 +153,22 @@ class PostRepository:
 
         if (
             'location_id' in update_data
-            and update_data['location_id'] is not None
             and update_data['location_id'] != post.location_id
         ):
             location = await session.get(
                 self._location_model, update_data['location_id']
             )
-            if not location:
+            if not location or not location.is_published:
                 raise LocationNotFoundException()
 
         if (
             'category_id' in update_data
-            and update_data['category_id'] is not None
             and update_data['category_id'] != post.category_id
         ):
             category = await session.get(
                 self._category_model, update_data['category_id']
             )
-            if not category:
+            if not category or not category.is_published:
                 raise CategoryNotFoundException()
 
         query = (

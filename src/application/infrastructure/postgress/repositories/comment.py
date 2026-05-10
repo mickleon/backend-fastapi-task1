@@ -12,11 +12,15 @@ from application.infrastructure.postgress.models.comment import (
 )
 from application.infrastructure.postgress.models.post import Post as PostModel
 from application.infrastructure.postgress.models.user import User as UserModel
+from application.infrastructure.postgress.repositories.post import (
+    PostRepository,
+)
 from application.schemas.comment import CommentRequestSchema
 
 
 class CommentRepository:
     def __init__(self) -> None:
+        self._post_repository = PostRepository()
         self._model: Type[CommentModel] = CommentModel
         self._author_model: Type[UserModel] = UserModel
         self._post_model: Type[PostModel] = PostModel
@@ -30,10 +34,48 @@ class CommentRepository:
 
         return comment
 
+    async def get_published(
+        self, session: AsyncSession, id: int
+    ) -> CommentModel:
+        query = select(self._model).where(
+            (self._model.id == id) & (self._model.is_published)
+        )
+        comment = await session.scalar(query)
+
+        if not comment:
+            raise CommentNotFoundException()
+
+        post = await self._post_repository.get_published(
+            session=session, id=comment.post_id
+        )
+
+        if not post:
+            raise CommentNotFoundException()
+
+        return comment
+
     async def create(
         self, session: AsyncSession, data: CommentRequestSchema, author_id: int
     ) -> CommentModel:
-        post = await session.get(self._post_model, data.post_id)
+        post = await self._post_repository.get(session=session, id=data.post_id)
+        if not post:
+            raise PostNotFoundException()
+
+        query = (
+            insert(self._model)
+            .values(**data.model_dump(exclude_none=True), author_id=author_id)
+            .returning(self._model)
+        )
+        comment = await session.scalar(query)
+
+        return comment  # pyright: ignore[reportReturnType]
+
+    async def create_published(
+        self, session: AsyncSession, data: CommentRequestSchema, author_id: int
+    ) -> CommentModel:
+        post = await self._post_repository.get_published(
+            session=session, id=data.post_id
+        )
         if not post:
             raise PostNotFoundException()
 
@@ -49,19 +91,11 @@ class CommentRepository:
     async def update(
         self, session: AsyncSession, id: int, data: CommentRequestSchema
     ) -> CommentModel:
-        comment = await session.get(self._model, id)
+        comment = await self.get(session=session, id=id)
         if not comment:
             raise CommentNotFoundException()
 
-        update_data = data.model_dump(exclude_unset=True)
-
-        if (
-            'post_id' in update_data
-            and update_data['post_id'] != comment.post_id
-        ):
-            post = await session.get(self._post_model, update_data['post_id'])
-            if not post:
-                raise PostNotFoundException()
+        update_data = data.model_dump(exclude_unset=True, exclude={'post_id'})
 
         query = (
             update(self._model)

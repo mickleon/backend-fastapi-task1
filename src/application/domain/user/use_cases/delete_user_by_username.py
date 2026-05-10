@@ -1,6 +1,5 @@
 import logging
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
 )
@@ -24,12 +23,6 @@ class DeleteUserByUsernameUseCase:
     async def execute(
         self, target_username: str, current_user: UserResponseSchema
     ) -> None:
-        if not current_user.is_admin:
-            error = AccessDeniedException()
-            logger.error(
-                f'Доступ запрещен: пользователь {current_user.username} попытался удалить пользователя {target_username}'
-            )
-            raise error
         async with self._database.session() as session:
             try:
                 await self._repo.delete(

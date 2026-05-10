@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Type, cast
 
 from sqlalchemy import CursorResult, delete, insert, select, update
@@ -48,6 +49,37 @@ class CategoryRepository:
             .offset(offset)
             .limit(limit)
         )
+        posts = (await session.scalars(query)).all()
+        return list(posts)
+
+    async def get_posts_published(
+        self,
+        session: AsyncSession,
+        id: uuid.UUID,
+        offset: int,
+        limit: int,
+    ) -> list[PostModel]:
+        query = select(self._model).where(
+            (self._model.id == id) & (self._model.is_published)
+        )
+
+        category = await session.scalar(query)
+
+        if not category:
+            raise CategoryNotFoundException()
+
+        query = (
+            select(self._post_model)
+            .where(
+                (self._post_model.is_published)
+                & (self._post_model.category_id == id)
+                & (self._post_model.pub_date <= datetime.now(timezone.utc))
+            )
+            .order_by(self._post_model.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+
         posts = (await session.scalars(query)).all()
         return list(posts)
 

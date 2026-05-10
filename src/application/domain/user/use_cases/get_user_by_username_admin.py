@@ -1,39 +1,39 @@
 import logging
-import uuid
 
 from application.core.exceptions.database_exceptions import (
-    LocationNotFoundException,
+    UserNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    LocationNotFoundByIdException,
+    UserNotFoundByUsernameException,
 )
 from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.location import (
-    LocationRepository,
+from application.infrastructure.postgress.repositories.user import (
+    UserRepository,
 )
-from application.schemas.location import LocationResponseSchema
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetLocationUseCase:
+class GetUserByUsernameAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = LocationRepository()
+        self._repo = UserRepository()
 
     async def execute(
         self,
-        id: uuid.UUID,
+        target_username: str,
         current_user: UserResponseSchema | None,
-    ) -> LocationResponseSchema:
+    ) -> UserResponseSchema:
         async with self._database.session() as session:
             try:
-                location = await self._repo.get(session=session, id=id)
-                if not location.is_published:
-                    raise LocationNotFoundException()
-            except LocationNotFoundException:
-                error = LocationNotFoundByIdException(id=id)
+                user = await self._repo.get(
+                    session=session, username=target_username
+                )
+            except UserNotFoundException:
+                error = UserNotFoundByUsernameException(
+                    username=target_username
+                )
                 username = (
                     current_user.username
                     if current_user is not None
@@ -44,4 +44,4 @@ class GetLocationUseCase:
                 )
                 raise error
 
-            return LocationResponseSchema.model_validate(obj=location)
+            return UserResponseSchema.model_validate(obj=user)

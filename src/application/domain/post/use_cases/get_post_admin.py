@@ -2,38 +2,40 @@ import logging
 import uuid
 
 from application.core.exceptions.database_exceptions import (
-    LocationNotFoundException,
+    PostNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    LocationNotFoundByIdException,
+    PostNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.location import (
-    LocationRepository,
+from application.infrastructure.postgress.repositories.post import (
+    PostRepository,
 )
-from application.schemas.location import LocationResponseSchema
+from application.infrastructure.postgress.repositories.user import (
+    UserRepository,
+)
+from application.schemas.post import PostResponseSchema
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetLocationUseCase:
+class GetPostAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = LocationRepository()
+        self._repo = PostRepository()
+        self._user_repo = UserRepository()
 
     async def execute(
         self,
         id: uuid.UUID,
         current_user: UserResponseSchema | None,
-    ) -> LocationResponseSchema:
+    ) -> PostResponseSchema:
         async with self._database.session() as session:
             try:
-                location = await self._repo.get(session=session, id=id)
-                if not location.is_published:
-                    raise LocationNotFoundException()
-            except LocationNotFoundException:
-                error = LocationNotFoundByIdException(id=id)
+                post = await self._repo.get(session=session, id=id)
+            except PostNotFoundException:
+                error = PostNotFoundByIdException(id=id)
                 username = (
                     current_user.username
                     if current_user is not None
@@ -44,4 +46,4 @@ class GetLocationUseCase:
                 )
                 raise error
 
-            return LocationResponseSchema.model_validate(obj=location)
+            return PostResponseSchema.model_validate(obj=post)

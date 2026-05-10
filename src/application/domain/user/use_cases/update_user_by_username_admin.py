@@ -1,6 +1,5 @@
 import logging
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     UserEmailAlreadyExistsException,
     UserNotFoundException,
@@ -20,7 +19,7 @@ from application.schemas.user import UserRequestSchema, UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class UpdateUserByUsernameUseCase:
+class UpdateUserByUsernameAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
@@ -34,19 +33,9 @@ class UpdateUserByUsernameUseCase:
         data.password = get_password_hash(password=data.password)
         async with self._database.session() as session:
             try:
-                user = await self._repo.get(
-                    session=session, username=target_username
+                user = await self._repo.update(
+                    session=session, username=target_username, data=data
                 )
-                if user.id == current_user.id:
-                    user = await self._repo.update(
-                        session=session, username=target_username, data=data
-                    )
-                else:
-                    error = AccessDeniedException()
-                    logger.error(
-                        f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать пользователя {target_username}'
-                    )
-                    raise error
             except UserNotFoundException:
                 error = UserNotFoundByUsernameException(
                     username=target_username

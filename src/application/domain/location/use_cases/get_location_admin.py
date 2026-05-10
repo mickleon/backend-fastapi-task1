@@ -11,26 +11,35 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.location import (
     LocationRepository,
 )
+from application.schemas.location import LocationResponseSchema
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class DeleteLocationUseCase:
+class GetLocationAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = LocationRepository()
 
     async def execute(
-        self, id: uuid.UUID, current_user: UserResponseSchema
-    ) -> None:
+        self,
+        id: uuid.UUID,
+        current_user: UserResponseSchema | None,
+    ) -> LocationResponseSchema:
         async with self._database.session() as session:
             try:
-                await self._repo.delete(session=session, id=id)
+                location = await self._repo.get(session=session, id=id)
             except LocationNotFoundException:
                 error = LocationNotFoundByIdException(id=id)
-                username = current_user.username
+                username = (
+                    current_user.username
+                    if current_user is not None
+                    else 'анонимный'
+                )
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
                 )
                 raise error
+
+            return LocationResponseSchema.model_validate(obj=location)

@@ -1,14 +1,15 @@
 import logging
+import uuid
 
 from application.core.exceptions.database_exceptions import (
-    UserNotFoundException,
+    CategoryNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    UserNotFoundByUsernameException,
+    CategoryNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.user import (
-    UserRepository,
+from application.infrastructure.postgress.repositories.category import (
+    CategoryRepository,
 )
 from application.schemas.post import (
     PostResponseSchema,
@@ -19,14 +20,14 @@ from application.schemas.user import UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class GetUserPostsByUsernameUseCase:
+class GetCategoryPostsAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = UserRepository()
+        self._repo = CategoryRepository()
 
     async def execute(
         self,
-        target_username: str,
+        id: uuid.UUID,
         page: int,
         page_size: int,
         current_user: UserResponseSchema | None,
@@ -37,17 +38,14 @@ class GetUserPostsByUsernameUseCase:
 
         async with self._database.session() as session:
             try:
-                posts = await self._repo.get_published_posts(
+                posts = await self._repo.get_posts(
                     session=session,
-                    username=target_username,
-                    current_user=current_user,
+                    id=id,
                     offset=offset,
                     limit=limit + 1,
                 )
-            except UserNotFoundException:
-                error = UserNotFoundByUsernameException(
-                    username=target_username
-                )
+            except CategoryNotFoundException:
+                error = CategoryNotFoundByIdException(id=id)
                 username = (
                     current_user.username
                     if current_user is not None

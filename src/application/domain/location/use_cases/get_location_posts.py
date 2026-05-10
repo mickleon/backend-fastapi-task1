@@ -38,7 +38,7 @@ class GetLocationPostsUseCase:
 
         async with self._database.session() as session:
             try:
-                posts = await self._repo.get_posts(
+                posts = await self._repo.get_posts_published(
                     session=session,
                     id=id,
                     offset=offset,

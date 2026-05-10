@@ -11,6 +11,9 @@ from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
+from application.infrastructure.postgress.repositories.user import (
+    UserRepository,
+)
 from application.schemas.post import PostResponseSchema
 from application.schemas.user import UserResponseSchema
 
@@ -21,6 +24,7 @@ class GetPostUseCase:
     def __init__(self):
         self._database = database
         self._repo = PostRepository()
+        self._user_repo = UserRepository()
 
     async def execute(
         self,
@@ -29,7 +33,9 @@ class GetPostUseCase:
     ) -> PostResponseSchema:
         async with self._database.session() as session:
             try:
-                post = await self._repo.get(session=session, id=id)
+                post = await self._repo.get_published(
+                    session=session, id=id, current_user=current_user
+                )
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=id)
                 username = (

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Type, cast
 
 from sqlalchemy import CursorResult, delete, insert, or_, select, update
@@ -14,7 +15,7 @@ from application.infrastructure.postgress.models.post import (
 from application.infrastructure.postgress.models.user import (
     User as UserModel,
 )
-from application.schemas.user import UserRequestSchema
+from application.schemas.user import UserRequestSchema, UserResponseSchema
 
 
 class UserRepository:
@@ -24,6 +25,15 @@ class UserRepository:
 
     async def get(self, session: AsyncSession, username: str) -> UserModel:
         query = select(self._model).where(self._model.username == username)
+        user = await session.scalar(query)
+
+        if not user:
+            raise UserNotFoundException()
+
+        return user
+
+    async def get_by_id(self, session: AsyncSession, id: int) -> UserModel:
+        query = select(self._model).where(self._model.id == id)
         user = await session.scalar(query)
 
         if not user:
@@ -48,6 +58,42 @@ class UserRepository:
             select(self._post_model)
             .where(self._post_model.author_id == user.id)
             .order_by(self._post_model.pub_date.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        posts = (await session.scalars(query)).all()
+        return list(posts)
+
+    async def get_published_posts(
+        self,
+        session: AsyncSession,
+        username: str,
+        current_user: UserResponseSchema | None,
+        offset: int,
+        limit: int,
+    ) -> list[PostModel]:
+        query = select(self._model).where(
+            (self._model.username == username) & (self._model.is_active)
+        )
+        user = await session.scalar(query)
+        if not user:
+            raise UserNotFoundException()
+
+        query = select(self._post_model).where(
+            (self._post_model.is_published)
+            & (self._post_model.author_id == user.id)
+        )
+        if current_user:
+            query = query.where(
+                (self._post_model.pub_date <= datetime.now(timezone.utc))
+                | (self._post_model.author_id == current_user.id)
+            )
+        else:
+            query = query.where(
+                self._post_model.pub_date <= datetime.now(timezone.utc)
+            )
+        query = (
+            query.order_by(self._post_model.pub_date.desc())
             .offset(offset)
             .limit(limit)
         )
@@ -107,9 +153,6 @@ class UserRepository:
                 raise UserUsernameAlreadyExistsException()
 
         user_data = data.model_dump(exclude_unset=True)
-
-        if 'password' in user_data:
-            user_data['password'] = user_data['password']
 
         query = (
             update(self._model)

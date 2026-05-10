@@ -1,53 +1,55 @@
 import logging
+import uuid
 
 from application.core.exceptions.database_exceptions import (
-    UserNotFoundException,
+    PostNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    UserNotFoundByUsernameException,
+    PostNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
+from application.infrastructure.postgress.repositories.post import (
+    PostRepository,
+)
 from application.infrastructure.postgress.repositories.user import (
     UserRepository,
 )
-from application.schemas.post import (
-    PostResponseSchema,
-    PostsPageResponseSchema,
+from application.schemas.comment import (
+    CommentResponseSchema,
+    CommentsPageResponseSchema,
 )
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetUserPostsByUsernameUseCase:
+class GetPostCommentsAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = UserRepository()
+        self._repo = PostRepository()
+        self._user_repo = UserRepository()
 
     async def execute(
         self,
-        target_username: str,
+        id: uuid.UUID,
         page: int,
         page_size: int,
         current_user: UserResponseSchema | None,
-    ) -> PostsPageResponseSchema:
+    ) -> CommentsPageResponseSchema:
         page = max(page, 1)
         limit = max(min(page_size, 100), 1)
         offset = (page - 1) * limit
 
         async with self._database.session() as session:
             try:
-                posts = await self._repo.get_published_posts(
+                comments = await self._repo.get_comments(
                     session=session,
-                    username=target_username,
-                    current_user=current_user,
+                    id=id,
                     offset=offset,
                     limit=limit + 1,
                 )
-            except UserNotFoundException:
-                error = UserNotFoundByUsernameException(
-                    username=target_username
-                )
+            except PostNotFoundException:
+                error = PostNotFoundByIdException(id=id)
                 username = (
                     current_user.username
                     if current_user is not None
@@ -58,15 +60,17 @@ class GetUserPostsByUsernameUseCase:
                 )
                 raise error
 
-            has_next = len(posts) > limit
+            has_next = len(comments) > limit
             if has_next:
-                posts = posts[:limit]
+                comments = comments[:limit]
 
-            posts_data = [
-                PostResponseSchema.model_validate(obj=post) for post in posts
+            comments_data = [
+                CommentResponseSchema.model_validate(obj=comment)
+                for comment in comments
+                if comment.is_published
             ]
 
-            return PostsPageResponseSchema(
-                items=posts_data,
+            return CommentsPageResponseSchema(
+                items=comments_data,
                 has_next=has_next,
             )

@@ -1,39 +1,36 @@
 import logging
-import uuid
 
 from application.core.exceptions.database_exceptions import (
-    LocationNotFoundException,
+    CommentNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
-    LocationNotFoundByIdException,
+    CommentNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
-from application.infrastructure.postgress.repositories.location import (
-    LocationRepository,
+from application.infrastructure.postgress.repositories.comment import (
+    CommentRepository,
 )
-from application.schemas.location import LocationResponseSchema
+from application.schemas.comment import CommentResponseSchema
 from application.schemas.user import UserResponseSchema
 
 logger = logging.getLogger(__name__)
 
 
-class GetLocationUseCase:
+class GetCommentAdminUseCase:
     def __init__(self):
         self._database = database
-        self._repo = LocationRepository()
+        self._repo = CommentRepository()
 
     async def execute(
         self,
-        id: uuid.UUID,
+        id: int,
         current_user: UserResponseSchema | None,
-    ) -> LocationResponseSchema:
+    ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                location = await self._repo.get(session=session, id=id)
-                if not location.is_published:
-                    raise LocationNotFoundException()
-            except LocationNotFoundException:
-                error = LocationNotFoundByIdException(id=id)
+                comment = await self._repo.get(session=session, id=id)
+            except CommentNotFoundException:
+                error = CommentNotFoundByIdException(id=id)
                 username = (
                     current_user.username
                     if current_user is not None
@@ -44,4 +41,4 @@ class GetLocationUseCase:
                 )
                 raise error
 
-            return LocationResponseSchema.model_validate(obj=location)
+            return CommentResponseSchema.model_validate(obj=comment)

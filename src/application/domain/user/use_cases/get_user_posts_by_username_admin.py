@@ -19,7 +19,7 @@ from application.schemas.user import UserResponseSchema
 logger = logging.getLogger(__name__)
 
 
-class GetUserPostsByUsernameUseCase:
+class GetUserPostsByUsernameAdminUseCase:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
@@ -37,10 +37,9 @@ class GetUserPostsByUsernameUseCase:
 
         async with self._database.session() as session:
             try:
-                posts = await self._repo.get_published_posts(
+                posts = await self._repo.get_posts(
                     session=session,
                     username=target_username,
-                    current_user=current_user,
                     offset=offset,
                     limit=limit + 1,
                 )

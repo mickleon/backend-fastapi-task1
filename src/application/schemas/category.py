@@ -16,8 +16,6 @@ class CategoryBaseSchema(BaseModel):
     title: str = Field(max_length=256, description=TITLE)
     description: str = Field(max_length=5000, description=DESCRIPTION)
 
-    is_published: bool = Field(default=True, description=IS_PUBLISHED)
-
 
 class CategoryRequestSchema(CategoryBaseSchema):
     pass
@@ -26,5 +24,6 @@ class CategoryRequestSchema(CategoryBaseSchema):
 class CategoryResponseSchema(CategoryBaseSchema):
     id: uuid.UUID = Field(description=CATEGORY_ID)
     created_at: datetime = Field(description=CREATED_AT)
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)

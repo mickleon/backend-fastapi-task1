@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
 )
@@ -32,12 +31,6 @@ class UpdateCategoryUseCase:
         data: CategoryRequestSchema,
         current_user: UserResponseSchema,
     ) -> CategoryResponseSchema:
-        if not current_user.is_admin:
-            error = AccessDeniedException()
-            logger.error(
-                f'Доступ запрещен: пользователь {current_user.username} попытался отредактировать категорию с id {id}'
-            )
-            raise error
         async with self._database.session() as session:
             try:
                 category = await self._repo.update(

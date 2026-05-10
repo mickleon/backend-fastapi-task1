@@ -31,7 +31,7 @@ class CreateCommentUseCase:
     ) -> CommentResponseSchema:
         async with self._database.session() as session:
             try:
-                comment = await self._repo.create(
+                comment = await self._repo.create_published(
                     session=session, data=data, author_id=current_user.id
                 )
             except PostNotFoundException:
