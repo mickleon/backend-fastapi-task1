@@ -26,9 +26,9 @@ class Post(Base):
         ForeignKey('locations.id', ondelete='SET NULL'),
         nullable=True,
     )
-    category_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey('categories.id', ondelete='SET NULL'),
-        nullable=True,
+    category_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey('categories.id', ondelete='CASCADE'),
+        nullable=False,
     )
     image_path: Mapped[str | None] = mapped_column(nullable=True)
 

@@ -88,6 +88,9 @@ from application.domain.post.use_cases.get_post_comments_admin import (
     GetPostCommentsAdminUseCase,
 )
 from application.domain.post.use_cases.get_post_image import GetPostImageUseCase
+from application.domain.post.use_cases.get_posts_last_list import (
+    GetPostsLastListUseCase,
+)
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
 from application.domain.post.use_cases.update_post_admin import (
     UpdatePostAdminUseCase,
@@ -173,6 +176,10 @@ def get_post_use_case() -> GetPostUseCase:
 
 def get_post_comments_use_case() -> GetPostCommentsUseCase:
     return GetPostCommentsUseCase()
+
+
+def get_posts_last_list_use_case() -> GetPostsLastListUseCase:
+    return GetPostsLastListUseCase()
 
 
 def create_post_use_case() -> CreatePostUseCase:

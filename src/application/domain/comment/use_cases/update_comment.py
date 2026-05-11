@@ -13,8 +13,8 @@ from application.infrastructure.postgress.repositories.comment import (
     CommentRepository,
 )
 from application.schemas.comment import (
-    CommentRequestSchema,
     CommentResponseSchema,
+    CommentUpdateSchema,
 )
 from application.schemas.user import UserResponseSchema
 
@@ -29,7 +29,7 @@ class UpdateCommentUseCase:
     async def execute(
         self,
         id: uuid.UUID,
-        data: CommentRequestSchema,
+        data: CommentUpdateSchema,
         current_user: UserResponseSchema,
     ) -> CommentResponseSchema:
         async with self._database.session() as session:

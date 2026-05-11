@@ -15,24 +15,22 @@ from application.resources.field_description import (
 )
 
 
-class CommentBaseSchema(BaseModel):
+class CommentUpdateSchema(BaseModel):
     text: str = Field(max_length=5000, description=TEXT)
+
+
+class CommentRequestSchema(CommentUpdateSchema):
     post_id: uuid.UUID = Field(description=POST_ID)
-
-
-class CommentRequestSchema(CommentBaseSchema):
-    pass
 
 
 class CommentRequestAdminSchema(CommentRequestSchema):
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
 
-class CommentResponseSchema(CommentBaseSchema):
+class CommentResponseSchema(CommentRequestAdminSchema):
     id: uuid.UUID = Field(description=COMMENT_ID)
     author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
-    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)
 

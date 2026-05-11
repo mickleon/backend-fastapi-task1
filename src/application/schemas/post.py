@@ -25,7 +25,7 @@ class PostBaseSchema(BaseModel):
     text: str = Field(max_length=5000, description=TEXT)
 
     location_id: uuid.UUID | None = Field(default=None, description=LOCATION_ID)
-    category_id: uuid.UUID | None = Field(default=None, description=CATEGORY_ID)
+    category_id: uuid.UUID = Field(description=CATEGORY_ID)
     image_path: str | None = Field(default=None, description=IMAGE_PATH)
 
 
@@ -56,13 +56,13 @@ class PostUpdateSchema(PostBaseSchema):
 
 class PostUpdateAdminSchema(PostBaseSchema):
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
+    pub_date: datetime = Field(description=PUB_DATE)
 
 
-class PostResponseSchema(PostBaseSchema):
+class PostResponseSchema(PostRequestAdminSchema):
     id: uuid.UUID = Field(description=POST_ID)
     author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
-    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)
 

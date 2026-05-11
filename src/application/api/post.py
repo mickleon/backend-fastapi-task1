@@ -18,6 +18,7 @@ from application.api.depends import (
     get_post_comments_use_case,
     get_post_image_use_case,
     get_post_use_case,
+    get_posts_last_list_use_case,
     update_post_use_case,
 )
 from application.core.exceptions.domain_exceptions import (
@@ -34,6 +35,9 @@ from application.domain.post.use_cases.get_post_comments import (
     GetPostCommentsUseCase,
 )
 from application.domain.post.use_cases.get_post_image import GetPostImageUseCase
+from application.domain.post.use_cases.get_posts_last_list import (
+    GetPostsLastListUseCase,
+)
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
 from application.schemas.comment import CommentsPageResponseSchema
 from application.schemas.post import (
@@ -62,6 +66,16 @@ async def get_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
+
+
+@router.get('/')
+async def get_posts_last_list(
+    use_case: GetPostsLastListUseCase = Depends(get_posts_last_list_use_case),
+    current_user: UserResponseSchema | None = Depends(
+        AuthService.get_current_user_or_none
+    ),
+) -> list[PostResponseSchema]:
+    return await use_case.execute(limit=5)
 
 
 @router.get('/{id}/comments', response_model=CommentsPageResponseSchema)
@@ -155,6 +169,7 @@ async def delete_post(
 @router.get(
     '/{post_id}/image',
     status_code=status.HTTP_200_OK,
+    response_class=FileResponse,
 )
 async def get_post_image(
     post_id: uuid.UUID,
@@ -176,6 +191,7 @@ async def get_post_image(
 @router.post(
     '/image',
     status_code=status.HTTP_201_CREATED,
+    response_model=PostImageResponse,
 )
 async def add_post_image(
     image: UploadFile = File(...),

@@ -19,6 +19,7 @@ from application.infrastructure.postgress.repositories.post import (
 from application.schemas.comment import (
     CommentRequestAdminSchema,
     CommentRequestSchema,
+    CommentUpdateSchema,
 )
 
 
@@ -96,7 +97,7 @@ class CommentRepository:
         self,
         session: AsyncSession,
         id: uuid.UUID,
-        data: CommentRequestSchema | CommentRequestAdminSchema,
+        data: CommentUpdateSchema | CommentRequestAdminSchema,
     ) -> CommentModel:
         comment = await self.get(session=session, id=id)
         if not comment:

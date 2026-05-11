@@ -27,6 +27,7 @@ from application.domain.comment.use_cases.update_comment import (
 from application.schemas.comment import (
     CommentRequestSchema,
     CommentResponseSchema,
+    CommentUpdateSchema,
 )
 from application.schemas.user import UserResponseSchema
 from application.services.auth import AuthService
@@ -68,13 +69,10 @@ async def create_comment(
         )
 
 
-@router.put(
-    '/{id}',
-    response_model=CommentResponseSchema,
-)
+@router.put('/{id}', response_model=CommentResponseSchema)
 async def update_comment(
     id: uuid.UUID,
-    data: CommentRequestSchema,
+    data: CommentUpdateSchema,
     use_case: UpdateCommentUseCase = Depends(update_comment_use_case),
     current_user: UserResponseSchema = Depends(AuthService.get_current_user),
 ) -> CommentResponseSchema:
@@ -88,10 +86,7 @@ async def update_comment(
         )
 
 
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment(
     id: uuid.UUID,
     use_case: DeleteCommentUseCase = Depends(delete_comment_use_case),

@@ -30,9 +30,6 @@ class GetUserByUsernameUseCase:
                 user = await self._repo.get(
                     session=session, username=target_username
                 )
-
-                if not user.is_active:
-                    raise UserNotFoundException()
             except UserNotFoundException:
                 error = UserNotFoundByUsernameException(
                     username=target_username

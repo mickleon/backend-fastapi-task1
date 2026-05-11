@@ -67,7 +67,6 @@ class GetPostCommentsAdminUseCase:
             comments_data = [
                 CommentResponseSchema.model_validate(obj=comment)
                 for comment in comments
-                if comment.is_published
             ]
 
             return CommentsPageResponseSchema(

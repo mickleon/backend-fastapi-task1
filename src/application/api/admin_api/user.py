@@ -100,10 +100,7 @@ async def create_user_admin(
         )
 
 
-@router.put(
-    '/{username}',
-    response_model=UserResponseSchema,
-)
+@router.put('/{username}', response_model=UserResponseSchema)
 async def update_user_by_username_admin(
     username: str,
     data: UserRequestAdminSchema,
@@ -126,10 +123,7 @@ async def update_user_by_username_admin(
         )
 
 
-@router.delete(
-    '/{username}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{username}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_by_username_admin(
     username: str,
     current_user: UserResponseSchema = Depends(AuthService.require_admin),

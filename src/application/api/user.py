@@ -96,10 +96,7 @@ async def create_user(
         )
 
 
-@router.put(
-    '/{username}',
-    response_model=UserResponseSchema,
-)
+@router.put('/{username}', response_model=UserResponseSchema)
 async def update_user_by_username(
     username: str,
     data: UserRequestSchema,

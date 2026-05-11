@@ -1,13 +1,16 @@
 from datetime import datetime, timezone
 from typing import Type, cast
 
-from sqlalchemy import CursorResult, delete, insert, or_, select, update
+from sqlalchemy import CursorResult, delete, exists, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.core.exceptions.database_exceptions import (
     UserEmailAlreadyExistsException,
     UserNotFoundException,
     UserUsernameAlreadyExistsException,
+)
+from application.infrastructure.postgress.models.category import (
+    Category as CategoryModel,
 )
 from application.infrastructure.postgress.models.post import (
     Post as PostModel,
@@ -26,18 +29,10 @@ class UserRepository:
     def __init__(self) -> None:
         self._model: Type[UserModel] = UserModel
         self._post_model: Type[PostModel] = PostModel
+        self._category_model: Type[CategoryModel] = CategoryModel
 
     async def get(self, session: AsyncSession, username: str) -> UserModel:
         query = select(self._model).where(self._model.username == username)
-        user = await session.scalar(query)
-
-        if not user:
-            raise UserNotFoundException()
-
-        return user
-
-    async def get_by_id(self, session: AsyncSession, id: int) -> UserModel:
-        query = select(self._model).where(self._model.id == id)
         user = await session.scalar(query)
 
         if not user:
@@ -76,26 +71,39 @@ class UserRepository:
         offset: int,
         limit: int,
     ) -> list[PostModel]:
-        query = select(self._model).where(
-            (self._model.username == username) & (self._model.is_active)
-        )
+        """
+        Возвращаются все публикации выбранного пользователя (username).
+        Если выбранный пользователь не является current_user, публикации возвращаются только если:
+        - у категории публикации значение поля is_published равно True,
+        - значение поля публикации is_published равно True,
+        - дата публикации не позже текущего времени.
+        Если current_user является автором публикации, ограниечения не накладываются.
+        """
+        query = select(self._model).where(self._model.username == username)
         user = await session.scalar(query)
         if not user:
             raise UserNotFoundException()
 
-        query = select(self._post_model).where(
-            (self._post_model.is_published)
-            & (self._post_model.author_id == user.id)
+        category_visible = exists(
+            select(1)
+            .select_from(self._category_model)
+            .where(
+                (self._category_model.id == self._post_model.category_id)
+                & (self._category_model.is_published)
+            )
         )
-        if current_user:
+
+        query = select(self._post_model).where(
+            self._post_model.author_id == user.id,
+        )
+
+        if current_user is None or current_user.id != user.id:
             query = query.where(
-                (self._post_model.pub_date <= datetime.now(timezone.utc))
-                | (self._post_model.author_id == current_user.id)
+                self._post_model.is_published
+                & (self._post_model.pub_date <= datetime.now(timezone.utc))
+                & category_visible
             )
-        else:
-            query = query.where(
-                self._post_model.pub_date <= datetime.now(timezone.utc)
-            )
+
         query = (
             query.order_by(self._post_model.pub_date.desc())
             .offset(offset)
@@ -111,14 +119,12 @@ class UserRepository:
     ) -> UserModel:
         existing_user = await session.scalar(
             select(self._model).where(
-                or_(
-                    self._model.username == data.username,
-                    self._model.email == data.email,
-                )
+                (self._model.username == data.username)
+                | (self._model.email == data.email)
             )
         )
 
-        if existing_user is not None:
+        if existing_user:
             if existing_user.username == data.username:
                 raise UserUsernameAlreadyExistsException()
             elif existing_user.email == data.email:

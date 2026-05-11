@@ -92,10 +92,7 @@ async def create_category_admin(
     return await use_case.execute(data=data, current_user=current_user)
 
 
-@router.put(
-    '/{id}',
-    response_model=CategoryResponseSchema,
-)
+@router.put('/{id}', response_model=CategoryResponseSchema)
 async def update_category_admin(
     id: uuid.UUID,
     data: CategoryRequestSchema,
@@ -112,10 +109,7 @@ async def update_category_admin(
         )
 
 
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category_admin(
     id: uuid.UUID,
     use_case: DeleteCategoryUseCase = Depends(delete_category_use_case),

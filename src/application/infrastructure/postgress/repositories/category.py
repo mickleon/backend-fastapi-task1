@@ -59,6 +59,12 @@ class CategoryRepository:
         offset: int,
         limit: int,
     ) -> list[PostModel]:
+        """
+        Возвращаются только те публикации, которые:
+        - принадлежат выбранной категории,
+        - значение поля is_published равно True,
+        - дата публикации не позже текущего времени.
+        """
         query = select(self._model).where(
             (self._model.id == id) & (self._model.is_published)
         )
@@ -75,7 +81,7 @@ class CategoryRepository:
                 & (self._post_model.category_id == id)
                 & (self._post_model.pub_date <= datetime.now(timezone.utc))
             )
-            .order_by(self._post_model.created_at.desc())
+            .order_by(self._post_model.pub_date.desc())
             .offset(offset)
             .limit(limit)
         )

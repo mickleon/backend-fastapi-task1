@@ -57,10 +57,8 @@ class UserRequestAdminSchema(UserRequestSchema):
     is_admin: bool = Field(default=False, description=IS_ADMIN)
 
 
-class UserResponseSchema(UserBaseSchema):
+class UserResponseSchema(UserRequestAdminSchema):
     id: int = Field(description=USER_ID)
     created_at: datetime = Field(description='Дата регистрации')
-    is_active: bool = Field(default=True, description=IS_ACTIVE)
-    is_admin: bool = Field(default=False, description=IS_ADMIN)
 
     model_config = ConfigDict(from_attributes=True)

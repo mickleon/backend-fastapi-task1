@@ -70,10 +70,7 @@ async def create_comment_admin(
         )
 
 
-@router.put(
-    '/{id}',
-    response_model=CommentResponseSchema,
-)
+@router.put('/{id}', response_model=CommentResponseSchema)
 async def update_comment_admin(
     id: uuid.UUID,
     data: CommentRequestAdminSchema,
@@ -92,10 +89,7 @@ async def update_comment_admin(
         )
 
 
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment_admin(
     id: uuid.UUID,
     use_case: DeleteCommentAdminUseCase = Depends(

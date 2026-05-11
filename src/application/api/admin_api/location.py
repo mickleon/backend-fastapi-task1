@@ -92,10 +92,7 @@ async def create_location_admin(
     return await use_case.execute(data=data, current_user=current_user)
 
 
-@router.put(
-    '/{id}',
-    response_model=LocationResponseSchema,
-)
+@router.put('/{id}', response_model=LocationResponseSchema)
 async def update_location_admin(
     id: uuid.UUID,
     data: LocationRequestSchema,
@@ -112,10 +109,7 @@ async def update_location_admin(
         )
 
 
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_location_admin(
     id: uuid.UUID,
     use_case: DeleteLocationUseCase = Depends(delete_location_use_case),

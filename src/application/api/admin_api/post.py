@@ -101,10 +101,7 @@ async def get_post_comments_admin(
         )
 
 
-@router.put(
-    '/{id}',
-    response_model=PostResponseSchema,
-)
+@router.put('/{id}', response_model=PostResponseSchema)
 async def update_post_admin(
     id: uuid.UUID,
     data: PostUpdateAdminSchema,
@@ -128,10 +125,7 @@ async def update_post_admin(
         )
 
 
-@router.delete(
-    '/{id}',
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post_admin(
     id: uuid.UUID,
     use_case: DeletePostAdminUseCase = Depends(delete_post_admin_use_case),

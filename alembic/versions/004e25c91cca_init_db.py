@@ -66,7 +66,7 @@ def upgrade() -> None:
         sa.Column('pub_date', sa.DateTime(timezone=True), nullable=False),
         sa.Column('author_id', sa.Integer(), nullable=False),
         sa.Column('location_id', sa.Uuid(), nullable=True),
-        sa.Column('category_id', sa.Uuid(), nullable=True),
+        sa.Column('category_id', sa.Uuid(), nullable=False),
         sa.Column('image_path', sa.String(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('is_published', sa.Boolean(), nullable=False),
@@ -78,7 +78,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ['category_id'],
             [f'{settings.POSTGRES_SCHEMA}.categories.id'],
-            ondelete='SET NULL',
+            ondelete='CASCADE',
         ),
         sa.ForeignKeyConstraint(
             ['location_id'],

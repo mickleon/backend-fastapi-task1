@@ -38,9 +38,6 @@ class GetCategoryPostsUseCase:
 
         async with self._database.session() as session:
             try:
-                category = await self._repo.get(session=session, id=id)
-                if not category.is_published:
-                    raise CategoryNotFoundException()
                 posts = await self._repo.get_posts_published(
                     session=session,
                     id=id,
