@@ -59,10 +59,15 @@ class PostUpdateAdminSchema(PostBaseSchema):
     pub_date: datetime = Field(description=PUB_DATE)
 
 
-class PostResponseSchema(PostRequestAdminSchema):
+class PostResponseSchema(PostBaseSchema):
     id: uuid.UUID = Field(description=POST_ID)
     author_id: int = Field(description=AUTHOR_ID)
     created_at: datetime = Field(description=CREATED_AT)
+    pub_date: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description=PUB_DATE,
+    )
+    is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
     model_config = ConfigDict(from_attributes=True)
 
