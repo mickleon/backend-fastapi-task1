@@ -43,9 +43,7 @@ router = APIRouter()
 async def get_post_admin(
     id: uuid.UUID,
     use_case: GetPostAdminUseCase = Depends(get_post_admin_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> PostResponseSchema:
     try:
         return await use_case.execute(id=id, current_user=current_user)
@@ -84,9 +82,7 @@ async def get_post_comments_admin(
     use_case: GetPostCommentsAdminUseCase = Depends(
         get_post_comments_admin_use_case
     ),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> CommentsPageResponseSchema:
     try:
         return await use_case.execute(

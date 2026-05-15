@@ -30,7 +30,7 @@ class GetCategoryPostsAdminUseCase:
         id: uuid.UUID,
         page: int,
         page_size: int,
-        current_user: UserResponseSchema | None,
+        current_user: UserResponseSchema,
     ) -> PostsPageResponseSchema:
         page = max(page, 1)
         limit = max(min(page_size, 100), 1)

@@ -25,7 +25,7 @@ class GetCategoryAdminUseCase:
     async def execute(
         self,
         id: uuid.UUID,
-        current_user: UserResponseSchema | None,
+        current_user: UserResponseSchema,
     ) -> CategoryResponseSchema:
         async with self._database.session() as session:
             try:

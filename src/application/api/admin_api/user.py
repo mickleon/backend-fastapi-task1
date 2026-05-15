@@ -43,9 +43,7 @@ async def get_user_by_username_admin(
     use_case: GetUserByUsernameAdminUseCase = Depends(
         get_user_by_username_admin_use_case
     ),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> UserResponseSchema:
     try:
         return await use_case.execute(
@@ -65,9 +63,7 @@ async def get_user_posts_by_username_admin(
     use_case: GetUserPostsByUsernameAdminUseCase = Depends(
         get_user_posts_by_username_admin_use_case
     ),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> PostsPageResponseSchema:
     try:
         return await use_case.execute(
@@ -88,9 +84,7 @@ async def get_user_posts_by_username_admin(
 async def create_user_admin(
     data: UserRequestAdminSchema,
     use_case: CreateUserAdminUseCase = Depends(create_user_admin_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> UserResponseSchema:
     try:
         return await use_case.execute(data=data, current_user=current_user)

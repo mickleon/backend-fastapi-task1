@@ -38,9 +38,7 @@ router = APIRouter()
 async def get_comment_admin(
     id: uuid.UUID,
     use_case: GetCommentAdminUseCase = Depends(get_comment_admin_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> CommentResponseSchema:
     try:
         return await use_case.execute(id=id, current_user=current_user)

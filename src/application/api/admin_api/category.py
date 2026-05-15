@@ -42,9 +42,7 @@ router = APIRouter()
 async def get_category_admin(
     id: uuid.UUID,
     use_case: GetCategoryAdminUseCase = Depends(get_category_admin_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> CategoryResponseSchema:
     try:
         return await use_case.execute(id=id, current_user=current_user)
@@ -62,9 +60,7 @@ async def get_category_posts_admin(
     use_case: GetCategoryPostsAdminUseCase = Depends(
         get_category_posts_admin_use_case
     ),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> PostsPageResponseSchema:
     try:
         return await use_case.execute(

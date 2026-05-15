@@ -42,9 +42,7 @@ router = APIRouter()
 async def get_location_admin(
     id: uuid.UUID,
     use_case: GetLocationAdminUseCase = Depends(get_location_admin_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> LocationResponseSchema:
     try:
         return await use_case.execute(id=id, current_user=current_user)
@@ -62,9 +60,7 @@ async def get_location_posts_admin(
     use_case: GetLocationPostsAdminUseCase = Depends(
         get_location_posts_admin_use_case
     ),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.require_admin
-    ),
+    current_user: UserResponseSchema = Depends(AuthService.require_admin),
 ) -> PostsPageResponseSchema:
     try:
         return await use_case.execute(
