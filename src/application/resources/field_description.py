@@ -25,9 +25,9 @@ LOCATION_NAME: Final[str] = 'Название места'
 COMMENT_ID: Final[str] = 'ID комментария'
 LOCATION_ID: Final[str] = 'ID местоположения'
 CATEGORY_ID: Final[str] = 'ID категории'
-IMAGE_PATH: Final[str] = (
-    'Путь до прикрепленного изображения в формате JPEG без расширения файла (предполагается .jpg)'
-)
+IMAGE_ID: Final[str] = 'ID изображения'
+IMAGE_IDS: Final[str] = 'Список ID изображений'
+IMAGES: Final[str] = 'Список изображений'
 POST_LIST_ITEMS: Final[str] = 'Список публикаций'
 COMMENTS_LIST_ITEMS: Final[str] = 'Список комментариев'
 

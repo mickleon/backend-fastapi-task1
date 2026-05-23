@@ -16,6 +16,9 @@ from application.infrastructure.postgress.models.category import (
 from application.infrastructure.postgress.models.comment import (
     Comment as CommentModel,
 )
+from application.infrastructure.postgress.models.image import (
+    Image as ImageModel,
+)
 from application.infrastructure.postgress.models.location import (
     Location as LocationModel,
 )
@@ -24,6 +27,9 @@ from application.infrastructure.postgress.models.post import (
 )
 from application.infrastructure.postgress.models.user import (
     User as UserModel,
+)
+from application.infrastructure.postgress.repositories.image import (
+    ImageRepository,
 )
 from application.schemas.post import (
     PostRequestAdminSchema,
@@ -41,6 +47,7 @@ class PostRepository:
         self._location_model: Type[LocationModel] = LocationModel
         self._category_model: Type[CategoryModel] = CategoryModel
         self._comments_model: Type[CommentModel] = CommentModel
+        self._image_repo = ImageRepository()
 
         self._category_visible = exists(
             select(1)
@@ -174,11 +181,22 @@ class PostRepository:
 
         query = (
             insert(self._model)
-            .values(**data.model_dump(exclude_none=True), author_id=author_id)
+            .values(
+                **data.model_dump(exclude_none=True, exclude={'image_ids'}),
+                author_id=author_id,
+            )
             .returning(self._model)
         )
         post = await session.scalar(query)
 
+        if data.image_ids:
+            await self._image_repo.associate_with_post(
+                session=session,
+                image_ids=data.image_ids,
+                post_id=post.id,  # pyright: ignore[reportArgumentType]
+            )
+
+        await session.refresh(post, ['images'])
         return post  # pyright: ignore[reportReturnType]
 
     async def update(
@@ -191,7 +209,7 @@ class PostRepository:
         if not post:
             raise PostNotFoundException()
 
-        update_data = data.model_dump(exclude_unset=True)
+        update_data = data.model_dump(exclude_unset=True, exclude={'image_ids'})
 
         if (
             'location_id' in update_data
@@ -221,6 +239,16 @@ class PostRepository:
         )
         post = await session.scalar(query)
 
+        if 'image_ids' in data.model_dump(exclude_unset=True):
+            await self._image_repo.dissociate_from_post(
+                session=session, post_id=id
+            )
+            if data.image_ids:
+                await self._image_repo.associate_with_post(
+                    session=session, image_ids=data.image_ids, post_id=id
+                )
+
+        await session.refresh(post, ['images'])
         return post  # pyright: ignore[reportReturnType]
 
     async def delete(self, session: AsyncSession, id: uuid.UUID) -> None:

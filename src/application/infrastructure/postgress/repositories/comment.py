@@ -11,8 +11,14 @@ from application.core.exceptions.database_exceptions import (
 from application.infrastructure.postgress.models.comment import (
     Comment as CommentModel,
 )
+from application.infrastructure.postgress.models.image import (
+    Image as ImageModel,
+)
 from application.infrastructure.postgress.models.post import Post as PostModel
 from application.infrastructure.postgress.models.user import User as UserModel
+from application.infrastructure.postgress.repositories.image import (
+    ImageRepository,
+)
 from application.infrastructure.postgress.repositories.post import (
     PostRepository,
 )
@@ -29,6 +35,7 @@ class CommentRepository:
         self._model: Type[CommentModel] = CommentModel
         self._author_model: Type[UserModel] = UserModel
         self._post_model: Type[PostModel] = PostModel
+        self._image_repo = ImageRepository()
 
     async def get(self, session: AsyncSession, id: uuid.UUID) -> CommentModel:
         query = select(self._model).where(self._model.id == id)
@@ -60,7 +67,10 @@ class CommentRepository:
         return comment
 
     async def create(
-        self, session: AsyncSession, data: CommentRequestSchema, author_id: int
+        self,
+        session: AsyncSession,
+        data: CommentRequestSchema | CommentRequestAdminSchema,
+        author_id: int,
     ) -> CommentModel:
         post = await self._post_repository.get(session=session, id=data.post_id)
         if not post:
@@ -68,11 +78,22 @@ class CommentRepository:
 
         query = (
             insert(self._model)
-            .values(**data.model_dump(exclude_none=True), author_id=author_id)
+            .values(
+                **data.model_dump(exclude_none=True, exclude={'image_ids'}),
+                author_id=author_id,
+            )
             .returning(self._model)
         )
         comment = await session.scalar(query)
 
+        if data.image_ids:
+            await self._image_repo.associate_with_comment(
+                session=session,
+                image_ids=data.image_ids,
+                comment_id=comment.id,  # pyright: ignore[reportArgumentType]
+            )
+
+        await session.refresh(comment, ['images'])
         return comment  # pyright: ignore[reportReturnType]
 
     async def create_published(
@@ -86,11 +107,22 @@ class CommentRepository:
 
         query = (
             insert(self._model)
-            .values(**data.model_dump(exclude_none=True), author_id=author_id)
+            .values(
+                **data.model_dump(exclude_none=True, exclude={'image_ids'}),
+                author_id=author_id,
+            )
             .returning(self._model)
         )
         comment = await session.scalar(query)
 
+        if data.image_ids:
+            await self._image_repo.associate_with_comment(
+                session=session,
+                image_ids=data.image_ids,
+                comment_id=comment.id,  # pyright: ignore[reportArgumentType]
+            )
+
+        await session.refresh(comment, ['images'])
         return comment  # pyright: ignore[reportReturnType]
 
     async def update(
@@ -103,7 +135,9 @@ class CommentRepository:
         if not comment:
             raise CommentNotFoundException()
 
-        update_data = data.model_dump(exclude_unset=True, exclude={'post_id'})
+        update_data = data.model_dump(
+            exclude_unset=True, exclude={'post_id', 'image_ids'}
+        )
 
         query = (
             update(self._model)
@@ -113,6 +147,18 @@ class CommentRepository:
         )
         comment = await session.scalar(query)
 
+        if 'image_ids' in data.model_dump(exclude_unset=True):
+            await self._image_repo.dissociate_from_comment(
+                session=session, comment_id=id
+            )
+            if data.image_ids:
+                await self._image_repo.associate_with_comment(
+                    session=session,
+                    image_ids=data.image_ids,
+                    comment_id=id,
+                )
+
+        await session.refresh(comment, ['images'])
         return comment  # pyright: ignore[reportReturnType]
 
     async def delete(self, session: AsyncSession, id: uuid.UUID) -> None:

@@ -29,3 +29,7 @@ class PostNotFoundException(BaseDatabaseException):
 
 class CommentNotFoundException(BaseDatabaseException):
     pass
+
+
+class ImageNotFoundException(BaseDatabaseException):
+    pass

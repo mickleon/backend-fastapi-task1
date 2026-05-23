@@ -5,6 +5,7 @@ from application.api.admin import router as admin_router
 from application.api.auth import router as auth_router
 from application.api.category import router as category_router
 from application.api.comment import router as comment_router
+from application.api.image import router as image_router
 from application.api.location import router as location_router
 from application.api.post import router as post_router
 from application.api.user import router as user_router
@@ -12,7 +13,7 @@ from application.core.config import settings
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(root_path=settings.ROOT_PATH)
+    app = FastAPI(root_path=settings.ROOT_PATH, openapi_version='3.0.3')
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
@@ -30,5 +31,6 @@ def create_app() -> FastAPI:
     app.include_router(location_router, prefix='/location', tags=['Location'])
     app.include_router(post_router, prefix='/post', tags=['Post'])
     app.include_router(comment_router, prefix='/comment', tags=['Comment'])
+    app.include_router(image_router, prefix='/image', tags=['Image'])
 
     return app

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from application.infrastructure.postgress.database import Base
 
@@ -26,4 +26,8 @@ class Comment(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now
+    )
+
+    images: Mapped[list['Image']] = relationship(
+        back_populates='comment', lazy='selectin', cascade='all, delete-orphan'
     )

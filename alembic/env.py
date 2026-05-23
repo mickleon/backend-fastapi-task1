@@ -12,11 +12,10 @@ from src.application.infrastructure.postgress.models.post import *  # noqa
 from src.application.infrastructure.postgress.models.location import *  # noqa
 from src.application.infrastructure.postgress.models.category import *  # noqa
 from src.application.infrastructure.postgress.models.comment import *  # noqa
+from src.application.infrastructure.postgress.models.image import *  # noqa
 
 
-CREATE_SCHEMA_QUERY = (
-    f'CREATE SCHEMA IF NOT EXISTS {settings.POSTGRES_SCHEMA};'
-)
+CREATE_SCHEMA_QUERY = f'CREATE SCHEMA IF NOT EXISTS {settings.POSTGRES_SCHEMA};'
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

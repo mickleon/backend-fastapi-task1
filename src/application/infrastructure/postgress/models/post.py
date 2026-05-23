@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from application.infrastructure.postgress.database import Base
 
@@ -30,7 +30,6 @@ class Post(Base):
         ForeignKey('categories.id', ondelete='CASCADE'),
         nullable=False,
     )
-    image_path: Mapped[str | None] = mapped_column(nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -38,3 +37,7 @@ class Post(Base):
         default=lambda: datetime.now(timezone.utc),
     )
     is_published: Mapped[bool] = mapped_column(nullable=False, default=True)
+
+    images: Mapped[list['Image']] = relationship(
+        back_populates='post', lazy='selectin', cascade='all, delete-orphan'
+    )

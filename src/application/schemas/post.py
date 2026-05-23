@@ -9,7 +9,8 @@ from application.resources.field_description import (
     CATEGORY_ID,
     CREATED_AT,
     HAS_NEXT,
-    IMAGE_PATH,
+    IMAGE_IDS,
+    IMAGES,
     IS_PUBLISHED,
     LOCATION_ID,
     POST_ID,
@@ -18,6 +19,7 @@ from application.resources.field_description import (
     TEXT,
     TITLE,
 )
+from application.schemas.image import ImageResponseSchema
 
 
 class PostBaseSchema(BaseModel):
@@ -26,10 +28,15 @@ class PostBaseSchema(BaseModel):
 
     location_id: uuid.UUID | None = Field(default=None, description=LOCATION_ID)
     category_id: uuid.UUID = Field(description=CATEGORY_ID)
-    image_path: str | None = Field(default=None, description=IMAGE_PATH)
 
 
-class PostRequestSchema(PostBaseSchema):
+class PostImageIdsMixin(BaseModel):
+    image_ids: list[uuid.UUID] = Field(
+        default_factory=list, description=IMAGE_IDS
+    )
+
+
+class PostRequestSchema(PostBaseSchema, PostImageIdsMixin):
     pub_date: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         description=PUB_DATE,
@@ -50,11 +57,11 @@ class PostRequestAdminSchema(PostRequestSchema):
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
 
 
-class PostUpdateSchema(PostBaseSchema):
+class PostUpdateSchema(PostBaseSchema, PostImageIdsMixin):
     pass
 
 
-class PostUpdateAdminSchema(PostBaseSchema):
+class PostUpdateAdminSchema(PostBaseSchema, PostImageIdsMixin):
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
     pub_date: datetime = Field(description=PUB_DATE)
 
@@ -68,6 +75,9 @@ class PostResponseSchema(PostBaseSchema):
         description=PUB_DATE,
     )
     is_published: bool = Field(default=True, description=IS_PUBLISHED)
+    images: list[ImageResponseSchema] = Field(
+        default_factory=list, description=IMAGES
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -77,7 +87,3 @@ class PostsPageResponseSchema(BaseModel):
         default_factory=list, description=POST_LIST_ITEMS
     )
     has_next: bool = Field(description=HAS_NEXT)
-
-
-class PostImageResponse(BaseModel):
-    image_path: str = Field(description=IMAGE_PATH)

@@ -121,3 +121,14 @@ class UploadFileIsNotImageException(BaseDomainException):
 
     def __init__(self) -> None:
         super().__init__(detail=self._exception_text)
+
+
+class ImageNotFoundByIdException(BaseDomainException):
+    _exception_text_template = "Изображение с id '{id}' не найдено"
+
+    def __init__(self, id: uuid.UUID) -> None:
+        self._exception_text_template = self._exception_text_template.format(
+            id=id
+        )
+
+        super().__init__(detail=self._exception_text_template)

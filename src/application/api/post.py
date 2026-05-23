@@ -3,20 +3,15 @@ import uuid
 from fastapi import (
     APIRouter,
     Depends,
-    File,
     HTTPException,
     Query,
-    UploadFile,
     status,
 )
-from starlette.responses import FileResponse
 
 from application.api.depends import (
-    add_post_image_use_case,
     create_post_use_case,
     delete_post_use_case,
     get_post_comments_use_case,
-    get_post_image_use_case,
     get_post_use_case,
     get_posts_last_list_use_case,
     update_post_use_case,
@@ -24,24 +19,20 @@ from application.api.depends import (
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
-    PostHasNoImageException,
     PostNotFoundByIdException,
 )
-from application.domain.post.use_cases.add_post_image import AddPostImageUseCase
 from application.domain.post.use_cases.create_post import CreatePostUseCase
 from application.domain.post.use_cases.delete_post import DeletePostUseCase
 from application.domain.post.use_cases.get_post import GetPostUseCase
 from application.domain.post.use_cases.get_post_comments import (
     GetPostCommentsUseCase,
 )
-from application.domain.post.use_cases.get_post_image import GetPostImageUseCase
 from application.domain.post.use_cases.get_posts_last_list import (
     GetPostsLastListUseCase,
 )
 from application.domain.post.use_cases.update_post import UpdatePostUseCase
 from application.schemas.comment import CommentsPageResponseSchema
 from application.schemas.post import (
-    PostImageResponse,
     PostRequestSchema,
     PostResponseSchema,
     PostUpdateSchema,
@@ -164,38 +155,3 @@ async def delete_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
         )
-
-
-@router.get(
-    '/{post_id}/image',
-    status_code=status.HTTP_200_OK,
-    response_class=FileResponse,
-)
-async def get_post_image(
-    post_id: uuid.UUID,
-    use_case: GetPostImageUseCase = Depends(get_post_image_use_case),
-    current_user: UserResponseSchema | None = Depends(
-        AuthService.get_current_user_or_none
-    ),
-) -> FileResponse:
-    try:
-        return await use_case.execute(
-            post_id=post_id, current_user=current_user
-        )
-    except (PostNotFoundByIdException, PostHasNoImageException) as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
-        )
-
-
-@router.post(
-    '/image',
-    status_code=status.HTTP_201_CREATED,
-    response_model=PostImageResponse,
-)
-async def add_post_image(
-    image: UploadFile = File(...),
-    use_case: AddPostImageUseCase = Depends(add_post_image_use_case),
-    current_user: UserResponseSchema = Depends(AuthService.get_current_user),
-) -> PostImageResponse:
-    return await use_case.execute(image=image, current_user=current_user)
