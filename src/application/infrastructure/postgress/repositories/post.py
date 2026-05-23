@@ -190,6 +190,9 @@ class PostRepository:
         post = await session.scalar(query)
 
         if data.image_ids:
+            await self._image_repo.validate_exist(
+                session=session, ids=data.image_ids
+            )
             await self._image_repo.associate_with_post(
                 session=session,
                 image_ids=data.image_ids,
@@ -244,6 +247,9 @@ class PostRepository:
                 session=session, post_id=id
             )
             if data.image_ids:
+                await self._image_repo.validate_exist(
+                    session=session, ids=data.image_ids
+                )
                 await self._image_repo.associate_with_post(
                     session=session, image_ids=data.image_ids, post_id=id
                 )

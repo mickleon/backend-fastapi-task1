@@ -10,6 +10,7 @@ from application.api.depends import (
 )
 from application.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
+    ImageNotFoundByIdException,
     PostNotFoundByIdException,
 )
 from application.domain.comment.use_cases.create_comment import (
@@ -67,6 +68,10 @@ async def create_comment(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
+    except ImageNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
+        )
 
 
 @router.put('/{id}', response_model=CommentResponseSchema)
@@ -83,6 +88,10 @@ async def update_comment(
     except CommentNotFoundByIdException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=e.get_detail()
+        )
+    except ImageNotFoundByIdException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
         )
 
 

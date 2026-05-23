@@ -1,9 +1,11 @@
 import logging
 
 from application.core.exceptions.database_exceptions import (
+    ImageNotFoundException,
     PostNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
+    ImageNotFoundByIdException,
     PostNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
@@ -36,6 +38,13 @@ class CreateCommentUseCase:
                 )
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=data.post_id)
+                username = current_user.username
+                logger.error(
+                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                )
+                raise error
+            except ImageNotFoundException as exception:
+                error = ImageNotFoundByIdException(id=exception.id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

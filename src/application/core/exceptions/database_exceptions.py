@@ -1,3 +1,6 @@
+import uuid
+
+
 class BaseDatabaseException(Exception):
     def __init__(self, detail: str | None = None) -> None:
         self._detail = detail
@@ -32,4 +35,5 @@ class CommentNotFoundException(BaseDatabaseException):
 
 
 class ImageNotFoundException(BaseDatabaseException):
-    pass
+    def __init__(self, id: uuid.UUID) -> None:
+        self.id = id

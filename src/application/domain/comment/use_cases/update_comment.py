@@ -4,9 +4,11 @@ import uuid
 from application.core.exceptions.auth_exceptions import AccessDeniedException
 from application.core.exceptions.database_exceptions import (
     CommentNotFoundException,
+    ImageNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CommentNotFoundByIdException,
+    ImageNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.comment import (
@@ -47,6 +49,13 @@ class UpdateCommentUseCase:
                     raise error
             except CommentNotFoundException:
                 error = CommentNotFoundByIdException(id=id)
+                username = current_user.username
+                logger.error(
+                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                )
+                raise error
+            except ImageNotFoundException as exception:
+                error = ImageNotFoundByIdException(id=exception.id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

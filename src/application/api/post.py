@@ -18,6 +18,7 @@ from application.api.depends import (
 )
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
+    ImageNotFoundByIdException,
     LocationNotFoundByIdException,
     PostNotFoundByIdException,
 )
@@ -107,6 +108,7 @@ async def create_post(
     except (
         LocationNotFoundByIdException,
         CategoryNotFoundByIdException,
+        ImageNotFoundByIdException,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()
@@ -134,6 +136,7 @@ async def update_post(
     except (
         LocationNotFoundByIdException,
         CategoryNotFoundByIdException,
+        ImageNotFoundByIdException,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.get_detail()

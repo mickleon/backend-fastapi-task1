@@ -2,11 +2,13 @@ import logging
 
 from application.core.exceptions.database_exceptions import (
     CategoryNotFoundException,
+    ImageNotFoundException,
     LocationNotFoundException,
 )
 from application.core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
+    ImageNotFoundByIdException,
 )
 from application.infrastructure.postgress.database import database
 from application.infrastructure.postgress.repositories.post import (
@@ -42,6 +44,13 @@ class CreatePostUseCase:
                 raise error
             except LocationNotFoundException:
                 error = LocationNotFoundByIdException(id=data.location_id)  # pyright: ignore[reportArgumentType]
+                username = current_user.username
+                logger.error(
+                    f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'
+                )
+                raise error
+            except ImageNotFoundException as exception:
+                error = ImageNotFoundByIdException(id=exception.id)
                 username = current_user.username
                 logger.error(
                     f'Пользователь {username} довел приложение до ошибки: {error.get_detail()}'

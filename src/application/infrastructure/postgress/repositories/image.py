@@ -29,6 +29,16 @@ class ImageRepository:
         images = (await session.scalars(query)).all()
         return list(images)
 
+    async def validate_exist(
+        self, session: AsyncSession, ids: list[uuid.UUID]
+    ) -> None:
+        if not ids:
+            return
+        found = await self.get_by_ids(session, ids)
+        if len(found) != len(ids):
+            missing = (set(ids) - {img.id for img in found}).pop()
+            raise ImageNotFoundException(id=missing)
+
     async def create(self, session: AsyncSession, path: str) -> ImageModel:
         query = insert(self._model).values(path=path).returning(self._model)
         image = await session.scalar(query)

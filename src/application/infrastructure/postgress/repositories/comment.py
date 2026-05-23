@@ -11,9 +11,6 @@ from application.core.exceptions.database_exceptions import (
 from application.infrastructure.postgress.models.comment import (
     Comment as CommentModel,
 )
-from application.infrastructure.postgress.models.image import (
-    Image as ImageModel,
-)
 from application.infrastructure.postgress.models.post import Post as PostModel
 from application.infrastructure.postgress.models.user import User as UserModel
 from application.infrastructure.postgress.repositories.image import (
@@ -87,6 +84,9 @@ class CommentRepository:
         comment = await session.scalar(query)
 
         if data.image_ids:
+            await self._image_repo.validate_exist(
+                session=session, ids=data.image_ids
+            )
             await self._image_repo.associate_with_comment(
                 session=session,
                 image_ids=data.image_ids,
@@ -116,6 +116,9 @@ class CommentRepository:
         comment = await session.scalar(query)
 
         if data.image_ids:
+            await self._image_repo.validate_exist(
+                session=session, ids=data.image_ids
+            )
             await self._image_repo.associate_with_comment(
                 session=session,
                 image_ids=data.image_ids,
@@ -152,6 +155,9 @@ class CommentRepository:
                 session=session, comment_id=id
             )
             if data.image_ids:
+                await self._image_repo.validate_exist(
+                    session=session, ids=data.image_ids
+                )
                 await self._image_repo.associate_with_comment(
                     session=session,
                     image_ids=data.image_ids,
