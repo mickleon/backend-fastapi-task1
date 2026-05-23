@@ -13,7 +13,6 @@ class Image(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, nullable=False, default=uuid.uuid4
     )
-    path: Mapped[str] = mapped_column(nullable=False)
     post_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey('posts.id', ondelete='CASCADE'),
         nullable=True,

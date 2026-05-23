@@ -39,15 +39,15 @@ class ImageRepository:
             missing = (set(ids) - {img.id for img in found}).pop()
             raise ImageNotFoundException(id=missing)
 
-    async def create(self, session: AsyncSession, path: str) -> ImageModel:
-        query = insert(self._model).values(path=path).returning(self._model)
+    async def create(self, session: AsyncSession, id: uuid.UUID) -> ImageModel:
+        query = insert(self._model).values(id=id).returning(self._model)
         image = await session.scalar(query)
         return image  # pyright: ignore[reportReturnType]
 
     async def bulk_create(
-        self, session: AsyncSession, paths: list[str]
+        self, session: AsyncSession, ids: list[uuid.UUID]
     ) -> list[ImageModel]:
-        values = [{'path': path} for path in paths]
+        values = [{'id': id} for id in ids]
         query = insert(self._model).values(values).returning(self._model)
         images = (await session.scalars(query)).all()
         return list(images)

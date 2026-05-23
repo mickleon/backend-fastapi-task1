@@ -32,5 +32,5 @@ class GetImageUseCase:
             logger.error(f'Изображение не найдено: {error.get_detail()}')
             raise error
 
-        full_image_path: str = f'{self.image_folder}/{image.path}.jpg'
+        full_image_path: str = f'{self.image_folder}/{image.id}.jpg'
         return FileResponse(full_image_path, media_type='image/jpeg')

@@ -30,7 +30,7 @@ class UploadImagesUseCase:
     async def execute(
         self, images: list[UploadFile], current_user: UserResponseSchema
     ) -> list[ImageUploadResponseSchema]:
-        saved_paths: list[str] = []
+        saved_ids: list[uuid.UUID] = []
 
         Path(self.image_folder).mkdir(parents=True, exist_ok=True)
 
@@ -49,8 +49,8 @@ class UploadImagesUseCase:
 
             pil_image.thumbnail(self.max_size, Image.Resampling.LANCZOS)
 
-            new_image_name = str(uuid.uuid4())
-            new_image_path = f'{self.image_folder}/{new_image_name}.jpg'
+            image_id = uuid.uuid4()
+            new_image_path = f'{self.image_folder}/{image_id}.jpg'
 
             pil_image.save(
                 new_image_path,
@@ -60,11 +60,11 @@ class UploadImagesUseCase:
                 progressive=True,
             )
 
-            saved_paths.append(new_image_name)
+            saved_ids.append(image_id)
 
         async with self._database.session() as session:
             images_created = await self._repo.bulk_create(
-                session=session, paths=saved_paths
+                session=session, ids=saved_ids
             )
 
         return [
